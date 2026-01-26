@@ -1,0 +1,40 @@
+{
+  "id": "pazindor-token-hotbar",
+  "title": "Pazindor's Token Hotbar",
+  "authors": [{
+    "name": "Pazindor",
+    "email": "xxpazindorxx@gmail.com",
+    "discord": "Patryk#6024"
+  }],
+  "version": "0.8.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13.350"
+  },
+  "relationships": {
+    "requires": [
+      {
+        "id": "pazindor-dev-essentials",
+        "type": "module",
+        "compatibility": {
+          "minimum": "0.8.0",
+          "verified": "0.8.0"
+        }
+      }
+    ]
+  },
+  "esmodules": ["module/pazindor-token-hotbar.mjs"],
+  "styles": ["css/pazindor-token-hotbar.css"],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ], 
+  "flags": {},
+  "description": "",
+  "url": "",
+  "manifest": "https://github.com/pazindorb/pazindor-token-hotbar/releases/download/0.8.0/module.json",
+  "download": "https://github.com/pazindorb/pazindor-token-hotbar/releases/download/0.8.0/pazindor-token-hotbar.zip"
+}
