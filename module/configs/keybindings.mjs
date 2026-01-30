@@ -1,11 +1,16 @@
 export function registerTokenHotbarKeybindings() {
 
-  game.keybindings.register("dc20rpg", `endTurn`, {
+  game.keybindings.register("pazindor-token-hotbar", `endTurn`, {
     name: `Token Hotbar End Turn`,
     editable: [{key: "Period"}],
     onDown: context => _onEndTurn(context),
     precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
   });
+
+  const defaultKeybindings = [
+    "Digit1", "Digit2", "Digit3", "Digit4", "Digit5",
+    "Digit6", "Digit7", "Digit8", "Digit9", "Digit0",
+  ];
 
   // Section A
   for (let i = 0; i < 36; i++) {
@@ -16,7 +21,7 @@ export function registerTokenHotbarKeybindings() {
       precedence: CONST.KEYBINDING_PRECEDENCE.DEFERRED,
     }
     if (defaultKeybindings[i]) keybinding.editable.push({key: defaultKeybindings[i]});
-    game.keybindings.register("dc20rpg", `tokenHotbarA${i}`, keybinding);
+    game.keybindings.register("pazindor-token-hotbar", `tokenHotbarA${i}`, keybinding);
   }
 
   // Section B
@@ -27,13 +32,8 @@ export function registerTokenHotbarKeybindings() {
       onDown: context => _onItemSlot(context, i, "sectionB"),
       precedence: CONST.KEYBINDING_PRECEDENCE.DEFERRED,
     }
-    game.keybindings.register("dc20rpg", `tokenHotbarB${i}`, keybinding);
+    game.keybindings.register("pazindor-token-hotbar", `tokenHotbarB${i}`, keybinding);
   }
-
-  const defaultKeybindings = [
-    "Digit1", "Digit2", "Digit3", "Digit4", "Digit5",
-    "Digit6", "Digit7", "Digit8", "Digit9", "Digit0",
-  ];
 }
 
 function _onEndTurn(context) {
