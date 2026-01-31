@@ -1,16 +1,16 @@
 <aside id="hotbar"> 
   <div id="hotbar-controls-left" class="flexrow" data-tooltip-direction="LEFT">
     <nav id="hotbar-controls">
-      <button type="button" class="button-small ui-control fa-solid {{#if tokenHotbar}}fa-code{{else}}fa-user{{/if}} icon" data-action="swap" data-tooltip="{{#if tokenHotbar}}{{localize 'PGT.HOTBAR'}}{{else}}{{localize 'PGT.TOKEN'}}{{/if}}"></button>
+      <button type="button" class="button-small ui-control fa-solid {{#if tokenHotbar}}fa-code{{else}}fa-user{{/if}} icon" data-action="swap" data-tooltip="{{#if tokenHotbar}}{{localize 'PTH.HOTBAR'}}{{else}}{{localize 'PTH.TOKEN'}}{{/if}}"></button>
       <button type="button" style="margin-top: 2px;" class="button-small ui-control fa-solid fa-volume icon" data-action="mute" data-tooltip="{{localize 'HOTBAR.MUTE'}}"></button>
       <button type="button" style="margin-top: 2px;" class="button-small ui-control fa-solid fa-bars icon" data-action="menu" data-tooltip="{{localize 'HOTBAR.MENU'}}"></button>
     </nav>
 
     {{#if showTokenHotbar}}
     <nav id="hotbar-controls" style="margin-left: 5px;">
-      <button type="button" class="button-wide ui-control fa-solid {{filter.icon}} icon filter-button slot full" data-action="filter" data-tooltip="{{localize 'PGT.FILTER'}}{{filter.label}}"></button>
-      <button type="button" style="margin-top: 2px;" class="button-wide ui-control fa-solid fa-fill-drip icon" data-action="autofill" data-tooltip="{{localize 'PGT.FILL'}}"></button>
-      <button type="button" style="margin-top: 2px;" class="button-wide ui-control fa-solid fa-gears icon" data-action="config" data-tooltip="{{localize 'PGT.CONFIG'}}"></button>
+      <button type="button" class="button-wide ui-control fa-solid {{filter.icon}} icon filter-button slot full" data-action="filter" data-tooltip="{{localize 'PTH.FILTER'}}{{filter.label}}"></button>
+      <button type="button" style="margin-top: 2px;" class="button-wide ui-control fa-solid fa-fill-drip icon" data-action="autofill" data-tooltip="{{localize 'PTH.FILL'}}"></button>
+      <button type="button" style="margin-top: 2px;" class="button-wide ui-control fa-solid fa-gears icon" data-action="config" data-tooltip="{{localize 'PTH.CONFIG'}}"></button>
     </nav>
     {{/if}}
   </div>

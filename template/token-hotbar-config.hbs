@@ -1,0 +1,106 @@
+<form id="token-hotbar-config" class="dialog-v13 dialog-content standard-form {{cssClass}}">
+
+  {{!-- Global Config --}}
+  <fieldset>
+    <legend>{{localize "PTH.HC.GLOBAL"}}</legend>
+
+    <div class="form-group">
+      <label>{{localize "PTH.HC.DISPLAY_TOKEN"}}</label>
+      <input type="checkbox" data-cType="activable" data-path="settings.displayToken" {{checked settings.displayToken}}/>
+    </div>
+
+    <div class="form-group">
+      <label>{{localize "PTH.HC.SECTION_A"}}</label>
+      <div class="form-fields">
+        <label>{{localize "PTH.HC.ROWS"}}</label>
+        <input type="number" data-path="settings.sectionA.rows" value="{{settings.sectionA.rows}}" data-limit="6" data-cType="numeric"/>
+        <label>{{localize "PTH.HC.COLUMNS"}}</label>
+        <input type="number" data-path="settings.sectionA.columns" value="{{settings.sectionA.columns}}" data-limit="12" data-cType="numeric"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>{{localize "PTH.HC.SECTION_B"}}</label>
+      <div class="form-fields">
+        <label>{{localize "PTH.HC.ROWS"}}</label>
+        <input type="number" data-path="settings.sectionB.rows" value="{{settings.sectionB.rows}}" data-limit="6" data-cType="numeric"/>
+        <label>{{localize "PTH.HC.COLUMNS"}}</label>
+        <input type="number" data-path="settings.sectionB.columns" value="{{settings.sectionB.columns}}" data-limit="12" data-cType="numeric"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>{{localize "PTH.HC.EFFECTS"}}</label>
+      <div class="form-fields">
+        <label>{{localize "PTH.HC.ROW_SIZE"}}</label>
+        <input type="number" data-path="settings.effects.rowSize" value="{{settings.effects.rowSize}}" data-limit="12" data-cType="numeric"/>
+        <label>{{localize "PTH.HC.EFFECT_SECTION"}}</label>
+        <select data-cType="string" data-path="settings.effects.position">
+          {{selectOptions sections selected=settings.effects.position blank=""}}
+        </select>
+      </div>
+    </div>
+  </fieldset>
+
+  {{!-- Token Specific Config --}}
+  <fieldset>
+    <legend>{{localize "PTH.HC.TOKEN"}}</legend>
+
+    {{!-- Resource 1 --}}
+    <fieldset>
+      <legend>{{localize "PTH.HC.RESOURCE_1"}}</legend>
+      <div class="form-group">
+        <label>{{localize "PTH.HC.RESOURCE.PATH"}}</label>
+        <input type="text" data-path="data.resource1.path" value="{{data.resource1.path}}" data-cType="string"/>
+      </div>
+      <div class="form-group">
+        <label>{{localize "PTH.HC.RESOURCE.LABEL"}}</label>
+        <input type="text" data-path="data.resource1.label" value="{{data.resource1.label}}" data-cType="string"/>
+      </div>
+      <div class="form-group">
+        <label>{{localize "PTH.HC.RESOURCE.COLOR"}}</label>
+        <color-picker data-cType="string" data-path="data.resource1.color" value="{{data.resource1.color}}"></color-picker>
+      </div>
+    </fieldset>
+
+    {{!-- Resource 2 --}}
+    <fieldset>
+      <legend>{{localize "PTH.HC.RESOURCE_2"}}</legend>
+      <div class="form-group">
+        <label>{{localize "PTH.HC.RESOURCE.PATH"}}</label>
+        <input type="text" data-path="data.resource2.path" value="{{data.resource2.path}}" data-cType="string"/>
+      </div>
+      <div class="form-group">
+        <label>{{localize "PTH.HC.RESOURCE.LABEL"}}</label>
+        <input type="text" data-path="data.resource2.label" value="{{data.resource2.label}}" data-cType="string"/>
+      </div>
+      <div class="form-group">
+        <label>{{localize "PTH.HC.RESOURCE.COLOR"}}</label>
+        <color-picker data-cType="string" data-path="data.resource2.color" value="{{data.resource2.color}}"></color-picker>
+      </div>
+    </fieldset>
+
+    {{!-- Resource 3 --}}
+    <fieldset>
+      <legend>{{localize "PTH.HC.RESOURCE_3"}}</legend>
+      <div class="form-group">
+        <label>{{localize "PTH.HC.RESOURCE.PATH"}}</label>
+        <input type="text" data-path="data.resource3.path" value="{{data.resource3.path}}" data-cType="string"/>
+      </div>
+      <div class="form-group">
+        <label>{{localize "PTH.HC.RESOURCE.LABEL"}}</label>
+        <input type="text" data-path="data.resource3.label" value="{{data.resource3.label}}" data-cType="string"/>
+      </div>
+      <div class="form-group">
+        <label>{{localize "PTH.HC.RESOURCE.COLOR"}}</label>
+        <color-picker data-cType="string" data-path="data.resource3.color" value="{{data.resource3.color}}"></color-picker>
+      </div>
+    </fieldset>
+
+  </fieldset>
+
+  {{!-- Confirm --}}
+  <footer class="form-footer">
+    <button data-action="save"><i class="fa-solid fa-floppy-disk fa-lg"></i>{{localize "PDE.SAVE"}}</button>
+  </footer>
+</form>

@@ -1,3 +1,5 @@
+import { openTokenHotbarConfig } from "./token-hotbar-config.mjs";
+
 export default class TokenHotbar extends foundry.applications.ui.Hotbar { 
   constructor(options = {}) {
     super(options)
@@ -16,8 +18,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   _initializeApplicationOptions(options) {
     const initialized = super._initializeApplicationOptions(options);
     initialized.actions.swap = this._onSwap;
-    // const colorTheme = game.settings.get("core", "uiConfig").colorScheme.applications;
-    // initialized.classes.push(`theme-${colorTheme}`);
+    initialized.actions.config = this._onConfigTokenHotbar
 
     return initialized;
   }
@@ -215,6 +216,10 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     this.tokenHotbar = !this.tokenHotbar;
     game.settings.set("pazindor-token-hotbar", "tokenHotbar", this.tokenHotbar);
     this.render();
+  }
+
+  _onConfigTokenHotbar(event, target) {
+    if (this.actor) openTokenHotbarConfig(this.actor);
   }
 
   // ==================== ACTIONS =====================

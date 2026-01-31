@@ -1,13 +1,33 @@
 {
-  "PGT.HOTBAR": "Change to Macro Mode",
-  "PGT.TOKEN": "Change to Token Mode",
-  "PGT.CONFIG": "Config Token Hotbar",
-  "PGT.FILL": "Fill Token Hotbar",
-  "PGT.FILTER": "Select Item Filter",
+  "PTH.HOTBAR": "Change to Macro Mode",
+  "PTH.TOKEN": "Change to Token Mode",
+  "PTH.CONFIG": "Config Token Hotbar",
+  "PTH.FILL": "Fill Token Hotbar",
+  "PTH.FILTER": "Select Item Filter",
 
   "PTH.DBCLICK": "Double click to open sheet",
   "PTH.CURRENT_HP": "Current Health",
   "PTH.SPEND_HP": "Spend 1 HP",
   "PTH.REGAIN_HP": "Regain 1 HP",
-  "PTH.TEMPORARY_HP": "Temporary Health"
+  "PTH.TEMPORARY_HP": "Temporary Health",
+  "PTH.CONFIG_TITLE": "Configure Token Hotbar",
+
+  "PTH.HC.GLOBAL": "Global options",
+  "PTH.HC.TOKEN": "Token specific options",
+  "PTH.HC.SECTION_A": "Section A (Right)",
+  "PTH.HC.SECTION_B": "Section B (Left)",
+  "PTH.HC.DISPLAY_TOKEN": "Display Token image instead of Actor portrait",
+
+  "PTH.HC.ROWS": "Number of Rows",
+  "PTH.HC.COLUMNS": "Number of Columns",
+  "PTH.HC.EFFECTS": "Effects Section",
+  "PTH.HC.ROW_SIZE": "Row size",
+  "PTH.HC.EFFECT_SECTION": "Place over section",
+
+  "PTH.HC.RESOURCE_1": "Resource 1",
+  "PTH.HC.RESOURCE_2": "Resource 2",
+  "PTH.HC.RESOURCE_3": "Resource 3",
+  "PTH.HC.RESOURCE.PATH": "System path to Resource",
+  "PTH.HC.RESOURCE.LABEL": "Resource Label",
+  "PTH.HC.RESOURCE.COLOR": "Resource Color"
 }
