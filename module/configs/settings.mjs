@@ -45,4 +45,12 @@ export function registerTokenHotbarSettings() {
     label: "TODO",
     type: String
   });
+
+  game.settings.register("pazindor-token-hotbar", "tempHpPath", {
+    scope: "world",
+    config: true,
+    default: "",
+    label: "TODO",
+    type: String
+  });
 }

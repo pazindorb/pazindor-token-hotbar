@@ -4,4 +4,7 @@ export function dnd5eConfig() {
 
   const currentHP = game.settings.get("pazindor-token-hotbar", "currentHpPath");
   if (!currentHP) game.settings.set("pazindor-token-hotbar", "currentHpPath", "system.attributes.hp.value");
+
+  const tempHP = game.settings.get("pazindor-token-hotbar", "tempHpPath");
+  if (!tempHP) game.settings.set("pazindor-token-hotbar", "tempHpPath", "system.attributes.hp.temp");
 }

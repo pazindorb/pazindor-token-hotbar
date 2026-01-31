@@ -1,3 +1,13 @@
 {
+  "PGT.HOTBAR": "Change to Macro Mode",
+  "PGT.TOKEN": "Change to Token Mode",
+  "PGT.CONFIG": "Config Token Hotbar",
+  "PGT.FILL": "Fill Token Hotbar",
+  "PGT.FILTER": "Select Item Filter",
 
+  "PTH.DBCLICK": "Double click to open sheet",
+  "PTH.CURRENT_HP": "Current Health",
+  "PTH.SPEND_HP": "Spend 1 HP",
+  "PTH.REGAIN_HP": "Regain 1 HP",
+  "PTH.TEMPORARY_HP": "Temporary Health"
 }

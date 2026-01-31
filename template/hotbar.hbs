@@ -1,19 +1,16 @@
 <aside id="hotbar"> 
   <div id="hotbar-controls-left" class="flexrow" data-tooltip-direction="LEFT">
     <nav id="hotbar-controls">
-      <button type="button" class="button-small margin-top-5 ui-control fa-solid {{#if tokenHotbar}}fa-code{{else}}fa-user{{/if}} icon" data-action="swap" data-tooltip aria-label="{{#if tokenHotbar}}{{localize 'HOTBAR.HOTBAR'}}{{else}}{{localize 'HOTBAR.TOKEN'}}{{/if}}"></button>
-      <button type="button" class="button-small margin-top-5 ui-control fa-solid fa-volume icon" data-action="mute" data-tooltip aria-label="{{localize 'HOTBAR.MUTE'}}"></button>
-      <button type="button" class="button-small margin-top-5 ui-control fa-solid fa-bars icon" data-action="menu" data-tooltip aria-label="{{localize 'HOTBAR.MENU'}}"></button>
+      <button type="button" class="button-small ui-control fa-solid {{#if tokenHotbar}}fa-code{{else}}fa-user{{/if}} icon" data-action="swap" data-tooltip="{{#if tokenHotbar}}{{localize 'PGT.HOTBAR'}}{{else}}{{localize 'PGT.TOKEN'}}{{/if}}"></button>
+      <button type="button" style="margin-top: 2px;" class="button-small ui-control fa-solid fa-volume icon" data-action="mute" data-tooltip="{{localize 'HOTBAR.MUTE'}}"></button>
+      <button type="button" style="margin-top: 2px;" class="button-small ui-control fa-solid fa-bars icon" data-action="menu" data-tooltip="{{localize 'HOTBAR.MENU'}}"></button>
     </nav>
 
     {{#if showTokenHotbar}}
-    <nav id="hotbar-controls" class=" margin-left-5">
-      <button type="button" class="button-wide ui-control fa-solid {{filter.icon}} icon filter-button slot full" data-action="filter" data-tooltip aria-label="{{localize 'HOTBAR.FILTER'}}{{filter.label}}"></button>
-      {{#ifCond actor.type '===' 'character'}}
-      <button type="button" class="button-wide margin-top-5 ui-control fa-solid fa-star icon" data-action="autofill" data-special="favorities" data-tooltip aria-label="{{localize 'HOTBAR.FILLFAVS'}}"></button>
-      {{/ifCond}}
-      <button type="button" class="button-wide margin-top-5 ui-control fa-solid fa-fill-drip icon" data-action="autofill" data-tooltip aria-label="{{localize 'HOTBAR.FILL'}}"></button>
-      <button type="button" class="button-wide margin-top-5 ui-control fa-solid fa-gears icon" data-action="config" data-tooltip aria-label="{{localize 'HOTBAR.CONFIG'}}"></button>
+    <nav id="hotbar-controls" style="margin-left: 5px;">
+      <button type="button" class="button-wide ui-control fa-solid {{filter.icon}} icon filter-button slot full" data-action="filter" data-tooltip="{{localize 'PGT.FILTER'}}{{filter.label}}"></button>
+      <button type="button" style="margin-top: 2px;" class="button-wide ui-control fa-solid fa-fill-drip icon" data-action="autofill" data-tooltip="{{localize 'PGT.FILL'}}"></button>
+      <button type="button" style="margin-top: 2px;" class="button-wide ui-control fa-solid fa-gears icon" data-action="config" data-tooltip="{{localize 'PGT.CONFIG'}}"></button>
     </nav>
     {{/if}}
   </div>
@@ -47,58 +44,36 @@
     
     {{!-- Character Details --}}
     {{#if img}}
-    <div></div>
     <div class="portrait-wrapper">
       {{{resources}}}
 
-      <img class="char-img portrait" data-tooltip="{{localize "HOTBAR.DBCLICK"}}" src="{{@root.img}}">
-      {{#if actor.dead}}<img class="char-img portrait-overlay" data-tooltip="{{localize "HOTBAR.DBCLICK"}}" src="systems/dc20rpg/images/statuses/dead.svg"/>{{/if}}
+      <img class="char-img portrait" data-tooltip="{{localize "PTH.DBCLICK"}}" src="{{@root.img}}">
 
       {{!-- HP Bar --}}
-      <div class="resource margin-top-10" data-tooltip="{{localize 'dc20rpg.resource.health'}}">
+      <div class="resource margin-top-10" data-tooltip="{{localize 'PTH.CURRENT_HP'}}">
+        {{#if health.tempPath}}
         <div class="above-bar margin-top-auto">
-          <div class="temporary-hp" data-tooltip="{{localize 'dc20rpg.resource.tempHp'}}">
-            <input class="temporary-input" data-cType="actor-numeric" data-path="system.resources.health.temp" type="number" value="{{actor.system.resources.health.temp}}" data-dtype="Number" placeholder="+Temp">
+          <div class="temporary-hp" data-tooltip="{{localize 'PTH.TEMPORARY_HP'}}">
+            <input class="temporary-input" data-cType="actor-numeric" data-path="{{health.tempPath}}" type="number" value="{{health.temp}}" data-dtype="Number" placeholder="+Temp">
           </div>
         </div>
+        {{/if}}
         
         <div class="resource-bar-wrapper">
-          <a class="health spend-resource" data-action="spendResource" data-resource="health" data-tooltip="{{localize 'dc20rpg.sheet.resource.spendHealth'}}"><i class="fas fa-solid fa-minus"></i></a>
+          <a class="health spend-resource" data-action="spendResource" data-resource="health" data-tooltip="{{localize "PTH.SPEND_HP"}}"><i class="fas fa-solid fa-minus"></i></a>
           <div class="resource-bar">
-            <div class="health-bar-temp" style="width: {{actor.system.resources.health.percentTemp}}%"></div>
-            <div class="health-bar" style="width: {{actor.system.resources.health.percent}}%"></div>
+            <div class="health-bar" style="width: {{health.percent}}%"></div>
             <div class="resource-content">
               <div class="resource-values">
-                <input class="bar-input" data-cType="actor-numeric" data-path="system.resources.health.current" type="number" value="{{actor.system.resources.health.current}}" data-dtype="Number">
+                <input class="bar-input" data-cType="actor-numeric" data-path="{{health.currentPath}}" type="number" value="{{health.current}}" data-dtype="Number">
                 <span class="separator"> / </span>
-                <input disabled class="bar-input" type="number" data-path="actor.system.resources.health.max" value="{{actor.system.resources.health.max}}" data-dtype="Number">
+                <input disabled class="bar-input" type="number" value="{{health.max}}" data-dtype="Number">
               </div>
             </div>
           </div>
-          <a class="health regain-resource" data-action="regainResource" data-resource="health" data-tooltip="{{localize 'dc20rpg.sheet.resource.regainHealth'}}"><i class="fas fa-solid fa-plus"></i></a>
+          <a class="health regain-resource" data-action="regainResource" data-resource="health" data-tooltip="{{localize "PTH.REGAIN_HP"}}"><i class="fas fa-solid fa-plus"></i></a>
         </div>
       </div>
-
-      {{!-- Action Points --}}
-      <div class="action-points-wrapper">
-        <a class="ap spend-resource" data-action="spendResource" data-resource="ap" data-tooltip="{{localize 'dc20rpg.sheet.resource.useAp'}}"><i class="fas fa-solid fa-minus"></i></a>
-        <div class="points">
-          {{!-- {{{icon-printer-empty actor.system.resources.ap.value actor.system.resources.ap.max 4 "fa-solid fa-dice-d6 ap" "fa-regular fa-dice-d6 ap" actor.system.globalModifier.prevent.goUnderAP "#b20000"}}} --}}
-        </div>
-        <a class="ap regain-resource" data-action="regainResource" data-resource="ap" data-tooltip="{{localize 'dc20rpg.sheet.resource.regainAp'}}"><i class="fas fa-solid fa-plus"></i></a>
-      </div>
-    </div>
-
-    <div class="special-action-wrapper">
-      <div class="sustain-wrapper">
-        {{#each sustain as |value key|}}
-        <img src="{{value.img}}" class="sustain-action" data-action="dropSustain" data-key={{key}} data-tooltip="{{value.name}}{{localize "dc20rpg.sheet.sustainAction.title"}}"/>
-        {{/each}}
-      </div>
-
-      {{#if heldAction}}
-      <img src="{{heldAction.itemImg}}" class="held-action" data-action="heldAction" data-tooltip="{{localize "dc20rpg.sheet.heldAction.roll"}}"/>
-      {{/if}}
     </div>
     {{/if}}
 
@@ -142,39 +117,20 @@
     {{#unless showTokenHotbar}}
     <nav id="hotbar-page-controls" class="flexcol">
       <button type="button" class="plain hotbar-page-control page-next fa-solid fa-triangle icon" data-action="page"
-        data-direction="1" data-tooltip aria-label="{{localize 'HOTBAR.PAGE_NEXT'}}">
+        data-direction="1" data-tooltip="{{localize 'HOTBAR.PAGE_NEXT'}}">
       </button>
       <span class="hotbar-page-number">{{page}}</span>
       <button type="button" class="plain hotbar-page-control page-prev fa-solid fa-triangle icon" data-action="page"
-        data-direction="-1" data-tooltip aria-label="{{localize 'HOTBAR.PAGE_PREV'}}">
+        data-direction="-1" data-tooltip="{{localize 'HOTBAR.PAGE_PREV'}}">
       </button>
     </nav>
     {{else}}
     {{#if img}}
     <div class="flexcol hotbar-controls" style="justify-content: end; height: 100%;">
-      {{#ifCond actor.type '===' 'character'}}
-      <button type="button" class="button-large ui-control fa-solid fa-clover icon" data-action="grit" style="font-size:22px;" data-tooltip aria-label="{{localize 'dc20rpg.sheet.resource.gritToDamageReduction'}}"></button>
-      {{/ifCond}}
-      <div class="move-points">
-        <input disabled type="number" value="{{actor.system.movePoints}}" data-dtype="Number" data-tooltip="{{localize 'HOTBAR.MOVE_LEFT'}}">
-        <button type="button" class="button-large ui-control fa-solid fa-shoe-prints icon" data-action="move" data-path="original" data-tooltip aria-label="{{localize 'HOTBAR.MOVE'}}"></button>
-      </div>
-    </div>
-    <div class="flexcol hotbar-controls margin-left-5" style="justify-content: end; height: 100%;">
-      <button type="button" class="button-large ui-control fa-solid fa-dice icon" data-action="check" data-tooltip aria-label="{{localize 'HOTBAR.CHECK'}}"></button>
-      <button type="button" class="button-large ui-control fa-solid fa-dice-d6 icon" data-action="basicAction" data-tooltip aria-label="{{localize 'HOTBAR.BASIC'}}"></button>
-      <button type="button" class="button-large ui-control fa-solid fa-handshake-angle icon" data-action="help" data-tooltip aria-label="{{localize 'HOTBAR.HELP'}}"></button>
-    </div>
-    <div class="flexcol hotbar-controls margin-left-5" style="justify-content: end; height: 100%;">
-      {{#if actor.myTurnActive}} 
-      <button type="button" class="button-large ui-control fa-solid  fa-forward icon" data-action="endTurn" data-tooltip aria-label="{{localize 'HOTBAR.TURN'}}"></button>
-      {{/if}}
-      {{#ifCond actor.type '===' 'character'}}
-      <button type="button" class="button-large ui-control fa-solid fa-campground icon" data-action="rest" data-tooltip aria-label="{{localize 'HOTBAR.REST'}}"></button>
-      {{/ifCond}}
-      {{#ifCond actor.type '!==' 'character'}}
-      <button type="button" class="button-large ui-control fa-solid fa-user icon" data-action="activable" data-path="original" style="background-color:{{#if original}}#8a00b7;{{else}}#646464;"{{/if}} data-tooltip aria-label="{{localize 'HOTBAR.ORIGINAL'}}"></button>
-      {{/ifCond}}
+      {{!-- BUTTONS --}}
+      {{!-- What could go there? - per system config --}}
+
+      {{!-- <button type="button" class="button-large ui-control fa-solid fa-dice icon" data-action="check" data-tooltip="{{localize 'HOTBAR.CHECK'}}"></button> --}}
     </div>
     {{/if}}
     {{/unless}}

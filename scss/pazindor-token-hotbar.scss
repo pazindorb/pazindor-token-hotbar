@@ -1,5 +1,5 @@
 .pth {
-
+  --font-default: "Signika";
 }
 
 #ui-bottom {
@@ -247,7 +247,7 @@
             height: 15px;
             min-width: 15px;
             font-size: 13px;
-            font-family: "Humaroid";
+            font-family: var(--font-default);
             border-radius: 4px 0 5px 0;
             padding-right: 2px;
           }
@@ -273,7 +273,7 @@
             height: 15px;
             width: 15px;
             font-size: 14px;
-            font-family: "Humaroid";
+            font-family: var(--font-default);
             margin-top: -15px;
             margin-left: 15px;
             border-radius: 10px 10px 0 0;
@@ -313,7 +313,7 @@
             z-index: 2;
             position: absolute;
             width: 140px;
-            bottom: 40px;
+            bottom: 20px;
             display: flex;
             flex-direction: column;
 
@@ -323,7 +323,7 @@
               grid-template-columns: 20px 1fr 20px;
               border: 1px solid #000000;
               border-radius: 4px;
-              background-color: #000000;
+              background-color: #e4e4e4;
 
               .regain-resource, .spend-resource {
                 background-color: transparent;
@@ -382,7 +382,7 @@
                 left: 0;
                 height: 100%;
                 border-radius: 4px;
-                background-color: #0c6e25;
+                background-color: #10d140;
               }
             }
 

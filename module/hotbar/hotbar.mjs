@@ -71,36 +71,73 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     this.actorId = this.actor.id;
     this.tokenId = token.id;
     context.actor = this.actor;
-
+    context.original = this.original;
 
     const tokenHotbarSettings = game.settings.get("pazindor-token-hotbar", "tokenHotbarSettings");
-    // HEALTH PATH - CONFIG
-    const maxHP = PDE.utils.getValueFromPath(this.actor, actorConfig.health.maxPath);
-    const currentHP = PDE.utils.getValueFromPath(this.actor, actorConfig.health.currentPath);
-    let hpPercent = Math.ceil(100 * currentHP/maxHP);
-    if (isNaN(hpPercent)) hpPercent = 0; 
-    context.health = {
-      percent: hpPercent,
-      max: maxHP,
-      current: currentHP,
-      path: actorConfig.health.currentPath
-    }
-    
     context.sectionA = await this._prepareSectionSlots("sectionA", tokenHotbarSettings, actorConfig);
     context.sectionB = await this._prepareSectionSlots("sectionB", tokenHotbarSettings, actorConfig);
     
-    context.sectionAWidth = tokenHotbarSettings["sectionA"].columns;
-    context.sectionBWidth = tokenHotbarSettings["sectionB"].columns;
     context.sectionARows = tokenHotbarSettings["sectionA"].rows;
     context.sectionBRows = tokenHotbarSettings["sectionB"].rows;
-    context.img = tokenHotbarSettings["displayToken"] ? token.document.texture.src : this.actor.img;
-
-    // context.resources = this._prepareResources();
     context.effects = await this._prepareEffects(tokenHotbarSettings.effects);
-    // context.help = this._prepareHelp(tokenHotbarSettings.help);
-    // context.heldAction = this._prepareHeldAction();
-    // context.sustain = this.actor.system.sustain;
-    context.original = this.original;
+
+    context.img = tokenHotbarSettings["displayToken"] ? token.document.texture.src : this.actor.img;
+    context.health = this._prepareHealth(actorConfig);
+    context.resources = this._prepareResources(actorConfig);
+  }
+
+  _prepareHealth() {
+    const maxHpPath = game.settings.get("pazindor-token-hotbar", "maxHpPath") || "";
+    const currentHpPath = game.settings.get("pazindor-token-hotbar", "currentHpPath") || "";
+    const tempHpPath = game.settings.get("pazindor-token-hotbar", "tempHpPath") || "";
+
+    const maxHP = PDE.utils.getValueFromPath(this.actor, maxHpPath);
+    const currentHP = PDE.utils.getValueFromPath(this.actor, currentHpPath);
+    const tempHP = PDE.utils.getValueFromPath(this.actor, tempHpPath);
+    let hpPercent = Math.ceil(100 * currentHP/maxHP);
+    if (isNaN(hpPercent)) hpPercent = 0; 
+
+    return {
+      percent: hpPercent,
+      max: maxHP,
+      current: currentHP,
+      temp: tempHP,
+      currentPath: currentHpPath,
+      tempPath: tempHpPath
+    }
+  }
+
+  _prepareResources(actorConfig) {
+    if (actorConfig.resource1.path && actorConfig.resource2.path && actorConfig.resource3.path) {
+      let content = "";
+      content += this._resource(actorConfig.resource1, "resource-left-short");
+      content += this._resource(actorConfig.resource3, "resource-middle");
+      content += this._resource(actorConfig.resource2, "resource-right-short");
+      return content;
+    }
+    if (actorConfig.resource1.path && actorConfig.resource2.path) {
+      let content = "";
+      content += this._resource(actorConfig.resource1, "resource-left");
+      content += this._resource(actorConfig.resource2, "resource-right");
+      return content;
+    }
+    if (actorConfig.resource1.path) {
+      let content = "";
+      content += this._resource(actorConfig.resource1, "resource-wide");
+      return content;
+    }
+    return "";
+  }
+
+  _resource(resource, clazz) {
+    const value = PDE.utils.getValueFromPath(this.actor, resource.path);
+
+    return `
+      <div class="${clazz}">
+        <input data-cType="actor-numeric" data-path="${resource.path}" type="number" value="${value}"
+        data-dtype="Number" data-tooltip="${resource.label}" style="background: linear-gradient(to bottom, ${resource.color}, #161616);">
+      </div>
+    `;
   }
 
   async _prepareSectionSlots(sectionKey, tokenHotbarSettings, actorConfig) {
@@ -163,29 +200,13 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     const active = [];
     const disabled = [];
 
-    const TextEditor = foundry.applications.ux.TextEditor.implementation;
     for(const effect of actor.allApplicableEffects()) {
       if (effect.isTemporary) {
-        const enriched = await TextEditor.enrichHTML(effect.description, {secrets:true, autoLink:true});
-        const descriptionColumn = enriched ? `<hr/>${enriched}` : "";
-        
-        // const timeLeft = effect.roundsLeft ? `<p><i class="fa-solid fa-stopwatch margin-right-5"></i> ${effect.roundsLeft} Rounds Left</p>` : "";
-        // const suspended = effect.suspended ? `<p><i class="fa-solid fa-power-off margin-right-5"></i> Suspended by: ${effect.suspendedBy} </p>` : "";
-        // const statuses = await this._prepareInnerStatuses(effect.statuses, effect.name);
-
-        // let middleColumn = `${timeLeft} ${suspended} ${statuses}`;
-        // if (middleColumn.trim()) middleColumn = "<hr/>" + middleColumn;
-
         if(effect.disabled) disabled.push(effect);
         else active.push(effect);
       }
     }
     return [active, disabled];
-
-    // Merge stackable conditions
-    // const mergedActive = this._mergeStackableConditions(active);
-    // const mergedDisabled = this._mergeStackableConditions(disabled);
-    // return [mergedActive, mergedDisabled];
   }
   // ==================== CONTEXT =====================
 
@@ -328,9 +349,6 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
 }
 
 function prepareTokenHotbarActorConfig() {
-  const maxHpPath = game.settings.get("pazindor-token-hotbar", "maxHpPath") || "";
-  const currentHpPath = game.settings.get("pazindor-token-hotbar", "currentHpPath") || "";
-
   return {
     sectionA: {},
     sectionB: {},
@@ -348,10 +366,6 @@ function prepareTokenHotbarActorConfig() {
       color: "#ffffff",
       path: "",
       label: ""
-    },
-    health: {
-      maxPath: maxHpPath,
-      currentPath: currentHpPath,
     },
   }
 }
