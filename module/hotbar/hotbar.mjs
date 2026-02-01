@@ -561,7 +561,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
       // Show tooltip
       let object;
       if (dataset.section)        object = TokenHotbar.getItemFromSlot(dataset.index, dataset.section);   // Get item
-      else if (dataset.effectId)  object = this.actor.effects.get(dataset.effectId)                       // Get effect
+      else if (dataset.effectId)  object = this._getEffect(dataset.effectId);                             // Get effect
       else                        object = await fromUuid(dataset.uuid);                                  // Get from uuid
       if (!object) return;
 
