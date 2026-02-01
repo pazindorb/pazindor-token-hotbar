@@ -47,6 +47,8 @@
   "PTH.SETTINGS.MAX_HP": "Max HP Path (required)",
   "PTH.SETTINGS.CURRENT_HP": "Current HP Path (required)",
   "PTH.SETTINGS.TEMP_HP": "Temporary HP Path (if exist)",
+  "PTH.SETTINGS.NEGATIVE_HEALTH": "Allow Negative Health",
+  "PTH.SETTINGS.NEGATIVE_HEALTH_HINT": "If true, HP will be able to reach negative values on the Token Hotbar. Some systems might not allow it anyway.",
 
 
   "PTH.DND5E.FILTER.ACTION": "Action",

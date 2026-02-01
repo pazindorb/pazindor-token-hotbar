@@ -53,4 +53,13 @@ export function registerTokenHotbarSettings() {
     name: "PTH.SETTINGS.TEMP_HP",
     type: String
   });
+
+  game.settings.register("pazindor-token-hotbar", "negativeHealth", {
+    scope: "world",
+    config: true,
+    default: false,
+    name: "PTH.SETTINGS.NEGATIVE_HEALTH",
+    hint: "PTH.SETTINGS.NEGATIVE_HEALTH_HINT",
+    type: Boolean
+  });
 }

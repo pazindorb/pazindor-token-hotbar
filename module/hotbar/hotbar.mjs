@@ -60,8 +60,8 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     const initialized = super._initializeApplicationOptions(options);
     initialized.actions.swap = this._onSwap;
     initialized.actions.config = this._onConfigTokenHotbar;
-    initialized.actions.spendHP = this._onSpendHP;
-    initialized.actions.regainHP = this._onRegainHP;
+    initialized.actions.spendHP = () => this._handleDeltaHpChange(1, true);
+    initialized.actions.regainHP = () => this._handleDeltaHpChange(1, false);
     initialized.actions.endTurn = this._onEndTurn;
     initialized.actions.filter = this._onFilterChange;
     initialized.actions.autofill = this._onAutofill;
@@ -387,12 +387,18 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     const dataset = target.dataset;
     const cType = dataset.ctype;
     const path = dataset.path;
-    const value = parseInt(target.value) || 0;
+    const value = parseInt(target.value);
 
-    switch (cType) {
-      case "actor-numeric": 
-        await this.actor.update({[path]: value})
-        break;
+    const currentHpPath = game.settings.get("pazindor-token-hotbar", "currentHpPath");
+    if (cType === "actor-numeric") {
+      const deltaAdd = target.value.startsWith("+");
+      const deltaSub = target.value.startsWith("-");
+      if (path === currentHpPath && (deltaAdd || deltaSub)) {
+        if (deltaAdd) return this._handleDeltaHpChange(value, false);
+        if (deltaSub) return this._handleDeltaHpChange(Math.abs(value), true);
+      }
+
+      if (!isNaN(value)) await this.actor.update({[path]: value});
     }
     this.render();
   }
@@ -407,34 +413,32 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     if (this.actor) openTokenHotbarConfig(this.actor);
   }
 
-  _onSpendHP(event, target) {
-    event.preventDefault();
-    event.stopPropagation();
-
+  _handleDeltaHpChange(value, subtract) {
     if (!this.actor) return;
-    const currentHpPath = game.settings.get("pazindor-token-hotbar", "currentHpPath");
-    const tempHpPath = game.settings.get("pazindor-token-hotbar", "tempHpPath");
-    if (!currentHpPath) return;
-
-    const current = foundry.utils.getProperty(this.actor, currentHpPath);
-    const temp = foundry.utils.getProperty(this.actor, tempHpPath);
-    if (temp) this.actor.update({[tempHpPath]: Math.max(0, temp - 1)});
-    else this.actor.update({[currentHpPath]: Math.max(0, current - 1)});
     
-  }
-
-  _onRegainHP(event, target) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (!this.actor) return;
     const currentHpPath = game.settings.get("pazindor-token-hotbar", "currentHpPath");
     const maxHpPath = game.settings.get("pazindor-token-hotbar", "maxHpPath");
+    const tempHpPath = game.settings.get("pazindor-token-hotbar", "tempHpPath");
+    const negativeHealth = game.settings.get("pazindor-token-hotbar", "negativeHealth");
     if (!currentHpPath || !maxHpPath) return;
 
     const current = foundry.utils.getProperty(this.actor, currentHpPath);
-    const max = foundry.utils.getProperty(this.actor, currentHpPath);
-    this.actor.update({[currentHpPath]: Math.max(max, current + 1)});
+    const max = foundry.utils.getProperty(this.actor, maxHpPath);
+    const temp = foundry.utils.getProperty(this.actor, tempHpPath);
+
+    if (subtract) {
+      if (temp) {
+        this.actor.update({[tempHpPath]: Math.max(temp - value, 0)});
+        value -= temp;
+      }
+      if (value > 0) {
+        const newValue = negativeHealth ? current - value : Math.max(current - value, 0);
+        this.actor.update({[currentHpPath]: newValue});
+      }
+    }
+    else {
+      this.actor.update({[currentHpPath]: Math.min(current + value, max)});
+    }
   }
 
   async _onEndTurn(event, target) {
