@@ -20,6 +20,7 @@ export function dnd5eConfig() {
   PTH.autofill = (actor, options) => {
     const itemsToAdd = [];
     for (const item of actor.items) {
+      if (!item.system.activities) continue;
       if (item.system.activities.size > 0) itemsToAdd.push(item);
     }
     return itemsToAdd;
