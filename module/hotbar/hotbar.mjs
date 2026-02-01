@@ -66,6 +66,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     initialized.actions.filter = this._onFilterChange;
     initialized.actions.autofill = this._onAutofill;
     initialized.actions.original = this._onOriginal;
+    initialized.actions.roll = this._onRoll;
     
     // Register system specific actions
     if (PTH.actions) {
@@ -324,10 +325,14 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   // ==================== CONTEXT =====================
 
   // ==================== ACTIONS =====================
+  _onRoll(event, target) {
+    const dataset = target.dataset;
+    this.rollItemSlot(dataset.index, dataset.section)
+  }
+
   rollItemSlot(index, section) {
     const item = TokenHotbar.getItemFromSlot(index, section);
-    if (!item) return;
-    PTH.rollItem(item);
+    if (item) PTH.rollItem(item);
   }
 
   _onMouseDown(event) {
@@ -337,13 +342,8 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   }
 
   _onLeftClick(event) {
-    const dataset = event.target.dataset;
-
-    if (event.target.classList.contains("item-slot")) {
-      const item = TokenHotbar.getItemFromSlot(dataset.index, dataset.section);
-      if (item) PTH.rollItem(item, {event: event});
-    }
     if (event.target.classList.contains("effect-img")) {
+      const dataset = event.target.dataset;
       const effect = this._getEffect(dataset.effectId);
       if (effect) effect.update({disabled: !effect.disabled});
     }
