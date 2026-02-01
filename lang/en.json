@@ -1,9 +1,11 @@
 {
   "PTH.HOTBAR": "Change to Macro Mode",
   "PTH.TOKEN": "Change to Token Mode",
-  "PTH.CONFIG": "Config Token Hotbar",
+  "PTH.CONFIG": "Configure Token Hotbar",
+  "PTH.ORIGINAL": "Modify Prototype Actor",
   "PTH.FILL": "Fill Token Hotbar",
-  "PTH.FILTER": "Select Item Filter",
+  "PTH.FILTER.SELECT": "Selected Filter: ",
+  "PTH.FILTER.NONE": "None",
 
   "PTH.DBCLICK": "Double click to open sheet",
   "PTH.CURRENT_HP": "Current Health",
@@ -11,6 +13,11 @@
   "PTH.REGAIN_HP": "Regain 1 HP",
   "PTH.TEMPORARY_HP": "Temporary Health",
   "PTH.CONFIG_TITLE": "Configure Token Hotbar",
+
+  "PTH.EFFECT_DELETE": "Do you want to remove that Effect?",
+  "PTH.ITEM_SHEET": "Open Item Sheet",
+  "PTH.REMOVE_ITEM": "Remove Item",
+  "PTH.END_TURN": "End Turn",
 
   "PTH.HC.GLOBAL": "Global options",
   "PTH.HC.TOKEN": "Token specific options",
@@ -29,5 +36,25 @@
   "PTH.HC.RESOURCE_3": "Resource 3",
   "PTH.HC.RESOURCE.PATH": "System path to Resource",
   "PTH.HC.RESOURCE.LABEL": "Resource Label",
-  "PTH.HC.RESOURCE.COLOR": "Resource Color"
+  "PTH.HC.RESOURCE.COLOR": "Resource Color",
+
+  "PTH.SETTINGS.MAX_HP": "Max HP Path (required)",
+  "PTH.SETTINGS.CURRENT_HP": "Current HP Path (required)",
+  "PTH.SETTINGS.TEMP_HP": "Temporary HP Path (if exist)",
+
+
+  "PTH.DND5E.FILTER.ACTION": "Action",
+  "PTH.DND5E.FILTER.BONUS_ACTION": "Bonus Action",
+  "PTH.DND5E.FILTER.REACTION": "Reaction",
+
+  "PTH.DND5E.START_REST.LONG": "Start Long Rest",
+  "PTH.DND5E.START_REST.SHORT": "Start Short Rest",
+  "PTH.DND5E.BASIC_ROLL": "Roll Check/Save",
+  "PTH.DND5E.INITIATIVE": "Roll for Initiative",
+
+  "PTH.DND5E.EQUIP_ITEM": "Equip Item",
+  "PTH.DND5E.UNEQUIP_ITEM": "Unequip Item",
+  "PTH.DND5E.ATTUNE_ITEM": "Attune Item",
+  "PTH.DND5E.UNATTUNE_ITEM": "Unattune Item"
+
 }

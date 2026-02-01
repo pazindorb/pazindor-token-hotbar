@@ -7,10 +7,13 @@
     </nav>
 
     {{#if showTokenHotbar}}
-    <nav id="hotbar-controls" style="margin-left: 5px;">
-      <button type="button" class="button-wide ui-control fa-solid {{filter.icon}} icon filter-button slot full" data-action="filter" data-tooltip="{{localize 'PTH.FILTER'}}{{filter.label}}"></button>
-      <button type="button" style="margin-top: 2px;" class="button-wide ui-control fa-solid fa-fill-drip icon" data-action="autofill" data-tooltip="{{localize 'PTH.FILL'}}"></button>
+    <nav id="hotbar-controls" style="margin-left: 5px; margin-top: auto;">
+      {{#if filter}}<button type="button" class="button-wide ui-control {{filter.icon}} icon filter-button slot full" data-action="filter" data-tooltip="{{localize 'PTH.FILTER.SELECT'}}[{{localize filter.label}}]"></button>{{/if}}
+      {{#if autofill}}<button type="button" style="margin-top: 2px;" class="button-wide ui-control fa-solid fa-fill-drip icon" data-action="autofill" data-tooltip="{{localize 'PTH.FILL'}}"></button>{{/if}}
       <button type="button" style="margin-top: 2px;" class="button-wide ui-control fa-solid fa-gears icon" data-action="config" data-tooltip="{{localize 'PTH.CONFIG'}}"></button>
+      {{#unless actorLink}}
+      <button type="button" style="margin-top: 2px; {{#if original}}background-color: #9b0cc9;{{/if}}" class="button-wide ui-control fa-solid fa-user icon" data-action="original" data-tooltip="{{localize 'PTH.ORIGINAL'}}"></button>
+      {{/unless}}
     </nav>
     {{/if}}
   </div>
@@ -32,11 +35,8 @@
       {{#each sectionB as |item index|}}
       <li class="slot {{item.borderColor}} {{#if item.system.toggle.toggledOn}}outline{{/if}} {{#if item.name}}full{{/if}} {{#if item.filterOut}}filter-out{{/if}} item-slot" role="button" data-action="roll" data-index="{{index}}" {{#if item.name}}data-hover="tooltip"{{/if}} data-section="sectionB">
         {{#if item.slotKeybind}}<span class="slot-keybind">{{item.slotKeybind}}</span>{{/if}}
-        {{#if item.actionMarker}}<i class="action-type fa-solid {{item.actionMarker}}"></i>{{/if}}
-        {{#if item.reactionMarker}}<i class="is-reaction fa-solid {{item.reactionMarker}}"></i>{{/if}}
         {{#if item.img}}<img class="slot-icon" src="{{item.img}}">{{/if}}
         {{#ifCond item.showCharges '!==' undefined}}<span class="show-charges">{{item.showCharges}}</span>{{/ifCond}}
-        {{#if item.system.statuses.equipped}}<i class="equipped fa-solid fa-suitcase-rolling"></i>{{/if}}
       </li>
       {{/each}}
       </div>
@@ -60,8 +60,9 @@
         {{/if}}
         
         <div class="resource-bar-wrapper">
-          <a class="health spend-resource" data-action="spendResource" data-resource="health" data-tooltip="{{localize "PTH.SPEND_HP"}}"><i class="fas fa-solid fa-minus"></i></a>
+          <a class="health spend-resource" data-action="spendHP" data-tooltip="{{localize "PTH.SPEND_HP"}}"><i class="fas fa-solid fa-minus"></i></a>
           <div class="resource-bar">
+            <div class="health-bar-temp" style="width: {{health.percentTemp}}%"></div>
             <div class="health-bar" style="width: {{health.percent}}%"></div>
             <div class="resource-content">
               <div class="resource-values">
@@ -71,7 +72,7 @@
               </div>
             </div>
           </div>
-          <a class="health regain-resource" data-action="regainResource" data-resource="health" data-tooltip="{{localize "PTH.REGAIN_HP"}}"><i class="fas fa-solid fa-plus"></i></a>
+          <a class="health regain-resource" data-action="regainHP" data-tooltip="{{localize "PTH.REGAIN_HP"}}"><i class="fas fa-solid fa-plus"></i></a>
         </div>
       </div>
     </div>
@@ -88,11 +89,8 @@
       {{#each sectionA as |item index|}}
       <li class="slot {{item.borderColor}} {{#if item.system.toggle.toggledOn}}outline{{/if}} {{#if item.name}}full{{/if}} {{#if item.filterOut}}filter-out{{/if}} item-slot" role="button" data-action="roll" data-index="{{index}}" {{#if item.name}}data-hover="tooltip"{{/if}} data-section="sectionA">
         {{#if item.slotKeybind}}<span class="slot-keybind">{{item.slotKeybind}}</span>{{/if}}
-        {{#if item.actionMarker}}<i class="action-type fa-solid {{item.actionMarker}}"></i>{{/if}}
-        {{#if item.reactionMarker}}<i class="is-reaction fa-solid {{item.reactionMarker}}"></i>{{/if}}
         {{#if item.img}}<img class="slot-icon" src="{{item.img}}">{{/if}}
         {{#ifCond item.showCharges '!==' undefined}}<span class="show-charges">{{item.showCharges}}</span>{{/ifCond}}
-        {{#if item.system.statuses.equipped}}<i class="equipped fa-solid fa-suitcase-rolling"></i>{{/if}}
       </li>
       {{/each}}
       </div>
@@ -126,11 +124,15 @@
     </nav>
     {{else}}
     {{#if img}}
-    <div class="flexcol hotbar-controls" style="justify-content: end; height: 100%;">
-      {{!-- BUTTONS --}}
-      {{!-- What could go there? - per system config --}}
-
-      {{!-- <button type="button" class="button-large ui-control fa-solid fa-dice icon" data-action="check" data-tooltip="{{localize 'HOTBAR.CHECK'}}"></button> --}}
+    <div class="flexcol hotbar-controls action-buttons">
+      {{#each actions}}
+        <button type="button" class="action-button ui-control {{icon}} icon" data-action="{{key}}" data-tooltip="{{localize label}}"></button>
+      {{/each}}
+    </div>
+    <div class="flexcol hotbar-controls next-turn">
+      {{#if endTurnButton}}
+        <button type="button" class="next-turn-button ui-control fa-solid fa-play icon" data-action="endTurn" data-tooltip="{{localize 'PTH.END_TURN'}}"></button>
+      {{/if}}
     </div>
     {{/if}}
     {{/unless}}

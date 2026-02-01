@@ -1,10 +1,51 @@
 import { openTokenHotbarConfig } from "./token-hotbar-config.mjs";
 
 export default class TokenHotbar extends foundry.applications.ui.Hotbar { 
+
+  static getItemIdFromSlot(index, sectionKey) {
+    if (!ui.hotbar.showTokenHotbar) return;
+    if (index == undefined || !sectionKey) return;
+    const section = ui.hotbar.actor.flags.tokenHotbar[sectionKey];
+    const itemId = section[index];
+    return itemId;
+  }
+
+  static getItemFromSlot(index, sectionKey) {
+    const itemId = TokenHotbar.getItemIdFromSlot(index, sectionKey);
+    if (!itemId) return;
+    return ui.hotbar.actor.items.get(itemId);
+  }
+
+  static itemSlotFilled(li) {
+    const itemSlot = li.classList.contains("item-slot");
+    if (!itemSlot) return false;
+    const dataset = li.dataset;
+    const item = TokenHotbar.getItemFromSlot(dataset.index, dataset.section);
+    return item ?? false;
+  }
+
   constructor(options = {}) {
     super(options)
     this.tokenHotbar = game.settings.get("pazindor-token-hotbar", "tokenHotbar");
-    this.filter = {} // TODO
+    this.original = false;
+
+    const filterOptions = PTH.filters;
+    if (filterOptions) {
+      this.filter = {
+        index: 0,
+        icon: "fas fa-border-all",
+        label: "PTH.FILTER.NONE",
+        options: [
+          {
+            label: "PTH.FILTER.NONE",
+            icon: "fas fa-border-all",
+            filter: item => true
+          },
+          ...PTH.filters
+        ]
+      }
+    }
+
   }
 
   /** @override */
@@ -18,18 +59,86 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   _initializeApplicationOptions(options) {
     const initialized = super._initializeApplicationOptions(options);
     initialized.actions.swap = this._onSwap;
-    initialized.actions.config = this._onConfigTokenHotbar
+    initialized.actions.config = this._onConfigTokenHotbar;
+    initialized.actions.spendHP = this._onSpendHP;
+    initialized.actions.regainHP = this._onRegainHP;
+    initialized.actions.endTurn = this._onEndTurn;
+    initialized.actions.filter = this._onFilterChange;
+    initialized.actions.autofill = this._onAutofill;
+    initialized.actions.original = this._onOriginal;
+    
+    // Register system specific actions
+    if (PTH.actions) {
+      for (const action of PTH.actions) {
+        initialized.actions[action.key] = (event) => action.action(this.actor, event);
+      }
+    }
 
     return initialized;
   }
 
   _attachFrameListeners() {
     super._attachFrameListeners();
-    // this.element.addEventListener("dblclick", this._onDoubleClick.bind(this));
-    // this.element.addEventListener("mousedown", this._onMouseDown.bind(this));
+    this.element.addEventListener("dblclick", this._onDoubleClick.bind(this));
+    this.element.addEventListener("mousedown", this._onMouseDown.bind(this));
     this.element.addEventListener("mouseover", this._onHover.bind(this));
     this.element.addEventListener("mouseout", this._onHover.bind(this));
+    this.element.addEventListener("change", this._onChange.bind(this));
   }
+
+  _getContextMenuOptions() {
+    const options = super._getContextMenuOptions();
+    options[1].condition = li => !this.tokenHotbar;
+
+    this._filterContextMenu(options);
+    this._itemSlotContextMenu(options);
+    
+    return options;
+  }
+  // ================= CONTEXT MENU ===================
+  _itemSlotContextMenu(options) {
+    // Register system specific context menu options
+    if (PTH.contextMenu) {
+      for (const context of PTH.contextMenu) options.push(context);
+    }
+
+    // Register default settings
+    options.push({
+      name: "PTH.ITEM_SHEET",
+      icon: '<i class="fa-solid fa-pen-to-square"></i>',
+      condition: li => TokenHotbar.itemSlotFilled(li),
+      callback: li => {
+        const item = TokenHotbar.itemSlotFilled(li);
+        if (item) item.sheet.render(true);
+      }
+    });
+    options.push({
+      name: "PTH.REMOVE_ITEM",
+      icon: '<i class="fa-solid fa-xmark"></i>',
+      condition: li => TokenHotbar.itemSlotFilled(li),
+      callback: li => {
+        const dataset = li.dataset;
+        this.actor.update({[`flags.tokenHotbar.${dataset.section}.${dataset.index}`]: ""});
+      }
+    });
+  }
+
+  _filterContextMenu(options) {
+    if (!this.filter) return;
+
+    const filters = this.filter.options;
+    for (let i = 0; i < filters.length; i++) {
+      const filter = filters[i];
+      options.push({
+        name: filter.label,
+        icon: `<i class="${filter.icon}"></i>`,
+        condition: button => button.classList.contains("filter-button"),
+        callback: () => this._onFilterChange(i)
+      });
+    }
+  }
+
+  // ================= CONTEXT MENU ===================
 
   // ==================== CONTEXT =====================
   async _prepareContext(options) {
@@ -53,8 +162,8 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   }
 
   _getActorFrom(token) {
-    const actorLink = token.document.actorLink;
-    if (!actorLink && this.original) return game.actors.get(token.document.actorId);
+    this.actorLink = token.document.actorLink;
+    if (!this.actorLink && this.original) return game.actors.get(token.document.actorId);
     return token.actor;
   }
 
@@ -73,18 +182,24 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     this.tokenId = token.id;
     context.actor = this.actor;
     context.original = this.original;
+    context.actorLink = this.actorLink;
 
     const tokenHotbarSettings = game.settings.get("pazindor-token-hotbar", "tokenHotbarSettings");
-    context.sectionA = await this._prepareSectionSlots("sectionA", tokenHotbarSettings, actorConfig);
-    context.sectionB = await this._prepareSectionSlots("sectionB", tokenHotbarSettings, actorConfig);
+    context.sectionA = this._prepareSectionSlots("sectionA", tokenHotbarSettings, actorConfig);
+    context.sectionB = this._prepareSectionSlots("sectionB", tokenHotbarSettings, actorConfig);
     
     context.sectionARows = tokenHotbarSettings["sectionA"].rows;
     context.sectionBRows = tokenHotbarSettings["sectionB"].rows;
-    context.effects = await this._prepareEffects(tokenHotbarSettings.effects);
+    context.effects = this._prepareEffects(tokenHotbarSettings.effects);
 
     context.img = tokenHotbarSettings["displayToken"] ? token.document.texture.src : this.actor.img;
     context.health = this._prepareHealth(actorConfig);
     context.resources = this._prepareResources(actorConfig);
+
+    context.actions = PTH.actions;
+    context.endTurnButton = this._isMyTurn();
+    context.filter = this.filter;
+    context.autofill = !!PTH.autofill;
   }
 
   _prepareHealth() {
@@ -97,9 +212,12 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     const tempHP = PDE.utils.getValueFromPath(this.actor, tempHpPath);
     let hpPercent = Math.ceil(100 * currentHP/maxHP);
     if (isNaN(hpPercent)) hpPercent = 0; 
+    let tempPercent = Math.ceil(100 * (currentHP + tempHP)/maxHP);
+    if (isNaN(tempPercent)) tempPercent = 0;
 
     return {
       percent: hpPercent,
+      percentTemp: tempPercent,
       max: maxHP,
       current: currentHP,
       temp: tempHP,
@@ -141,13 +259,9 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     `;
   }
 
-  async _prepareSectionSlots(sectionKey, tokenHotbarSettings, actorConfig) {
+  _prepareSectionSlots(sectionKey, tokenHotbarSettings, actorConfig) {
     const section = actorConfig[sectionKey];
     const items = this.actor.items;
-
-    const borderColor = tokenHotbarSettings.borderColor;
-    const markers = tokenHotbarSettings.markers;
-    const showCharges = tokenHotbarSettings.showCharges;
 
     const sc = tokenHotbarSettings[sectionKey];
     const size = sc.rows * sc.columns;
@@ -155,17 +269,27 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     for (let i = 0; i < size; i++) {
       const itemId = section[i];
       const original = items.get(itemId);
-      const item = original ? {...original} : null;
+      const item = original ? foundry.utils.deepClone(original) : null;
       if (item) {
-        // if (borderColor) this._borderColor(item);
-        // if (markers) this._markers(item);
-        // if (showCharges) this._charges(item);   
-        // this._runFilter(item);
+        // this._markers(item);
+        this._runFilter(item);
+        this._charges(item);
       }
-      slots[i] = item || {filterOut: this.filter.type !== "none"}
+      slots[i] = item || {filterOut: true}
       slots[i].slotKeybind = this._slotKeybind(i, sectionKey);
     }
     return slots;
+  }
+
+  _runFilter(item) {
+    if (!this.filter) return;
+    const selected = this.filter.options[this.filter.index];
+    item.filterOut = !selected.filter(item);
+  }
+
+  _charges(item) {
+    const charges = PTH.getItemCharges(item);
+    if (charges != null) item.showCharges = charges;
   }
 
   _slotKeybind(index, sectionKey) {
@@ -178,40 +302,94 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     return humanized;
   }
 
-  async _prepareEffects(effectsConfig) {
-    const [active, disabled] = await this._prepareTemporaryEffects();
-    const position = effectsConfig.position;
-    const rowSize = effectsConfig.rowSize;
-    let separator = true;
-    if (active.length === 0) separator = false;
-    if (!separator || active.length === rowSize) separator = false;
-
+  _prepareEffects(effectsConfig) {
+    const effects = this.actor.allApplicableEffects().filter(effect => effect.isTemporary);
     const data = {
-      position: position,
-      active: active,
-      disabled: disabled,
-      rowSize: rowSize,
-      separator: separator
+      position: effectsConfig.position,
+      effects: effects,
+      rowSize: effectsConfig.rowSize,
     }
     return data;
   }
 
-  async _prepareTemporaryEffects() {
-    const actor = this.actor;
-    const active = [];
-    const disabled = [];
+  _isMyTurn() {
+    if (!this.actor.inCombat) return false;
 
-    for(const effect of actor.allApplicableEffects()) {
-      if (effect.isTemporary) {
-        if(effect.disabled) disabled.push(effect);
-        else active.push(effect);
-      }
-    }
-    return [active, disabled];
+    const combatant = game.combat.combatant;
+    const token = this.actor.getActiveTokens()[0];
+    if (token) combatant.tokenId === token.id;
+    return combatant.actorId === this.actor.id;
   }
   // ==================== CONTEXT =====================
 
   // ==================== ACTIONS =====================
+  _onMouseDown(event) {
+    if (event.button === 0) this._onLeftClick(event);
+    if (event.button === 1) this._onMiddleClick(event);
+    if (event.button === 2) this._onRightClick(event);
+  }
+
+  _onLeftClick(event) {
+    const dataset = event.target.dataset;
+
+    if (event.target.classList.contains("item-slot")) {
+      const item = TokenHotbar.getItemFromSlot(dataset.index, dataset.section);
+      if (item) PTH.rollItem(item, {event: event});
+    }
+    if (event.target.classList.contains("effect-img")) {
+      const effect = this._getEffect(dataset.effectId);
+      if (effect) effect.update({disabled: !effect.disabled});
+    }
+  }
+
+  _onMiddleClick(event) {
+    const dataset = event.target.dataset;
+
+    if (event.target.classList.contains("item-slot")) {
+      const item = TokenHotbar.getItemFromSlot(dataset.index, dataset.section);
+      if (item) item.sheet.render(true);
+    }
+    if (event.target.classList.contains("effect-img")) {
+      const effect = this._getEffect(dataset.effectId);
+      if (effect) effect.sheet.render(true);
+    }
+  }
+
+  async _onRightClick(event) {
+    const dataset = event.target.dataset;
+
+    if (event.target.classList.contains("effect-img")) {
+      const confirmed = await PDE.InputDialog.confirm(game.i18n.localize("PTH.EFFECT_DELETE"));
+      if (!confirmed) return;
+      const effect = this._getEffect(dataset.effectId);
+      if (effect) effect.delete();
+    }
+  }
+
+  _getEffect(effectId) {
+    return this.actor.allApplicableEffects().find(effect => effect.id === effectId);;
+  }
+
+  _onDoubleClick(event) {
+    if (!event.target.classList.contains("char-img")) return;
+    if (this.actor) this.actor.sheet.render(true);
+  }
+
+  async _onChange(event) {
+    const target = event.target;
+    const dataset = target.dataset;
+    const cType = dataset.ctype;
+    const path = dataset.path;
+    const value = parseInt(target.value) || 0;
+
+    switch (cType) {
+      case "actor-numeric": 
+        await this.actor.update({[path]: value})
+        break;
+    }
+    this.render();
+  }
+  
   _onSwap(event, target) {
     this.tokenHotbar = !this.tokenHotbar;
     game.settings.set("pazindor-token-hotbar", "tokenHotbar", this.tokenHotbar);
@@ -220,6 +398,120 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
 
   _onConfigTokenHotbar(event, target) {
     if (this.actor) openTokenHotbarConfig(this.actor);
+  }
+
+  _onSpendHP(event, target) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!this.actor) return;
+    const currentHpPath = game.settings.get("pazindor-token-hotbar", "currentHpPath");
+    const tempHpPath = game.settings.get("pazindor-token-hotbar", "tempHpPath");
+    if (!currentHpPath) return;
+
+    const current = foundry.utils.getProperty(this.actor, currentHpPath);
+    const temp = foundry.utils.getProperty(this.actor, tempHpPath);
+    if (temp) this.actor.update({[tempHpPath]: Math.max(0, temp - 1)});
+    else this.actor.update({[currentHpPath]: Math.max(0, current - 1)});
+    
+  }
+
+  _onRegainHP(event, target) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!this.actor) return;
+    const currentHpPath = game.settings.get("pazindor-token-hotbar", "currentHpPath");
+    const maxHpPath = game.settings.get("pazindor-token-hotbar", "maxHpPath");
+    if (!currentHpPath || !maxHpPath) return;
+
+    const current = foundry.utils.getProperty(this.actor, currentHpPath);
+    const max = foundry.utils.getProperty(this.actor, currentHpPath);
+    this.actor.update({[currentHpPath]: Math.max(max, current + 1)});
+  }
+
+  async _onEndTurn(event, target) {
+    await game.combat.nextTurn();
+    this.render();
+  }
+
+  _onFilterChange(index) {
+    let newIndex = isNaN(index) ? this.#nextFilterIndex() : index;
+
+    const newFilter = this.filter.options[newIndex];
+    this.filter.index = newIndex;
+    this.filter.icon = newFilter.icon,
+    this.filter.label = newFilter.label,
+    this.render();
+  }
+
+  #nextFilterIndex() {
+    const max = this.filter.options.length;
+    const index = this.filter.index;
+
+    if (index + 1 >= max) return 0;
+    return index + 1;
+  }
+
+  async _onAutofill() {
+    if (!PTH.autofill) return;
+    const items = PTH.autofill(this.actor);
+    if (!items || items.length === 0) return;
+
+    await this._clearSection(this.actor.flags.tokenHotbar.sectionA, "sectionA");
+    await this._clearSection(this.actor.flags.tokenHotbar.sectionB, "sectionB");
+
+    const tokenHotbarSettings = game.settings.get("pazindor-token-hotbar", "tokenHotbarSettings");
+    const sca = tokenHotbarSettings.sectionA;
+    const scb = tokenHotbarSettings.sectionB;
+    const size = {
+      A: sca.rows * sca.columns,
+      B: scb.rows * scb.columns
+    }
+    const updateData = {
+      sectionA: {},
+      sectionB: {}
+    };
+
+    let section = size.A >= size.B ? "A" : "B";
+    const full = {
+      A: size.A === 0,
+      B: size.B === 0
+    }
+    let counter = 0;
+    for (const item of items) {
+      if (counter > size[section]) {
+        full[section] = true;
+        if (section === "A" && !full.B) {
+          section = "B";
+          counter = 0;
+        }
+        else if (section === "B" && !full.A) {
+          section = "A";
+          counter = 0;
+        }
+        else {
+          break;
+        }
+      }
+      updateData[`section${section}`][counter] = item.id;
+      counter++;
+    }
+
+    await this.actor.update({["flags.tokenHotbar"]: updateData});
+  }
+
+  async _clearSection(section, sectionKey) {
+    const updateData = {}
+    for (const key of Object.keys(section)) {
+      updateData[`flags.tokenHotbar.${sectionKey}.${key}`] = "";
+    }
+    await this.actor.update(updateData);
+  }
+
+  _onOriginal() {
+    this.original = !this.original; 
+    this.render()
   }
 
   // ==================== ACTIONS =====================
@@ -261,9 +553,9 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
 
       // Show tooltip
       let object;
-      if (dataset.section)        object = this._getItemFromSlot(dataset.index, dataset.section);  // Get item
-      else if (dataset.effectId)  object = this.actor.effects.get(dataset.effectId)                // Get effect
-      else                        object = await fromUuid(dataset.uuid);                           // Get from uuid
+      if (dataset.section)        object = TokenHotbar.getItemFromSlot(dataset.index, dataset.section);   // Get item
+      else if (dataset.effectId)  object = this.actor.effects.get(dataset.effectId)                       // Get effect
+      else                        object = await fromUuid(dataset.uuid);                                  // Get from uuid
       if (!object) return;
 
       const left = target.offsetLeft - 130;
@@ -326,7 +618,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     const dataset = event.target.dataset;
     const index = dataset.index;
     const sectionKey = dataset.section;
-    const itemId = this._getItemIdFromSlot(index, sectionKey);
+    const itemId = TokenHotbar.getItemIdFromSlot(index, sectionKey);
     if (!itemId) return;
 
     const dragData = {
@@ -336,19 +628,6 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
 
     event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
     this.actor.update({[`flags.tokenHotbar.${sectionKey}.${index}`]: ""});
-  }
-
-  _getItemIdFromSlot(index, sectionKey) {
-    if (index == undefined || !sectionKey) return;
-    const section = this.actor.flags.tokenHotbar[sectionKey];
-    const itemId = section[index];
-    return itemId;
-  }
-
-  _getItemFromSlot(index, section) {
-    const itemId = this._getItemIdFromSlot(index, section);
-    if (!itemId) return;
-    return this.actor.items.get(itemId);
   }
   // ==================== CURSOR =====================
 }

@@ -1,23 +1,8 @@
 <div id="effects-tracker" style="grid-template-columns: repeat({{effects.rowSize}}, minmax(0, 1fr));">
-
-  {{!-- Active --}}
-  {{#each effects.active}}
+  {{#each effects.effects}}
   <div class="effect-wrapper">
     <div class="effect">
-      <img class="effect-img" src="{{img}}" data-hover="tooltip" data-effect-id="{{_id}}" data-turn-on="false"/>
-    </div>
-  </div>
-  {{/each}}
-
-  {{#if effects.separator}}
-  <div class="effect-wrapper"></div>
-  {{/if}}
-
-  {{!-- Disabled --}}
-  {{#each effects.disabled}}
-  <div class="effect-wrapper">
-    <div class="effect">
-      <img class="effect-img off" src="{{img}}" data-hover="tooltip" data-effect-id="{{_id}}" data-item-id="{{itemId}}" data-turn-on="true"/>
+      <img class="effect-img {{#if disabled}}off{{/if}}" src="{{img}}" data-hover="tooltip" data-effect-id="{{_id}}" data-turn-on="{{disabled}}"/>
     </div>
   </div>
   {{/each}}

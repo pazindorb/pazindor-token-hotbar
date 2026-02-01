@@ -10,14 +10,15 @@ Hooks.once("init", async function() {
   registerTokenHotbarSettings();
   registerTokenHotbarKeybindings();
   CONFIG.ui.hotbar = TokenHotbar;
+
+  window.PTH = {};
+  switch (game.system.id) {
+    case "dnd5e": dnd5eConfig(); break;
+    case "pf2e": pf2eConfig(); break;
+  }
 });
 
 Hooks.once("ready", async function() {
   preloadHandlebarsTemplates();
   registerHotbarRefreshHooks();
-
-  switch (game.system.id) {
-    case "dnd5e": dnd5eConfig(); break;
-    case "pf2e": pf2eConfig(); break;
-  }
 });

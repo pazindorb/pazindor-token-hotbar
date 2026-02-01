@@ -34,7 +34,7 @@ export function registerTokenHotbarSettings() {
     scope: "world",
     config: true,
     default: "",
-    label: "TODO",
+    name: "PTH.SETTINGS.MAX_HP",
     type: String
   });
 
@@ -42,7 +42,7 @@ export function registerTokenHotbarSettings() {
     scope: "world",
     config: true,
     default: "",
-    label: "TODO",
+    name: "PTH.SETTINGS.CURRENT_HP",
     type: String
   });
 
@@ -50,7 +50,7 @@ export function registerTokenHotbarSettings() {
     scope: "world",
     config: true,
     default: "",
-    label: "TODO",
+    name: "PTH.SETTINGS.TEMP_HP",
     type: String
   });
 }
