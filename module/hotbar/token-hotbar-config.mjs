@@ -10,6 +10,18 @@ export class TokenHotbarConfig extends BaseDialog {
   }
 
   /** @override */
+  static DEFAULT_OPTIONS = {
+    id: "token-hotbar-config",
+    classes: ["pth"],
+    position: {width: 620},
+    window: {
+      title: "PTH.CONFIG_TITLE",
+      icon: "fa-solid fa-gears",
+    },
+  }
+
+
+  /** @override */
   static PARTS = {
     root: {
       template: "modules/pazindor-token-hotbar/template/token-hotbar-config.hbs",
@@ -18,10 +30,7 @@ export class TokenHotbarConfig extends BaseDialog {
 
   _initializeApplicationOptions(options) {
     const initialized = super._initializeApplicationOptions(options);
-    initialized.window.title = "PTH.CONFIG_TITLE";
-    initialized.window.icon = "fa-solid fa-gears";
     initialized.actions.save = this._onSave;
-    initialized.position.width = 620;
     return initialized;
   }
 

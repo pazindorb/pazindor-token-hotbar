@@ -38,6 +38,10 @@
   "PTH.HC.RESOURCE.LABEL": "Resource Label",
   "PTH.HC.RESOURCE.COLOR": "Resource Color",
 
+  "PTH.BASIC_ROLL.TITLE": "Select Roll",
+  "PTH.BASIC_ROLL.CHECK": "Check",
+  "PTH.BASIC_ROLL.SAVE": "Save",
+
   "PTH.SETTINGS.MAX_HP": "Max HP Path (required)",
   "PTH.SETTINGS.CURRENT_HP": "Current HP Path (required)",
   "PTH.SETTINGS.TEMP_HP": "Temporary HP Path (if exist)",

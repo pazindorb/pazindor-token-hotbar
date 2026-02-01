@@ -434,3 +434,12 @@
   height: 90px;
   padding-bottom: 65px;
 }
+
+#roll-dialog .select-wrapper {
+  display: flex;
+}
+#roll-dialog .select-wrapper fieldset {
+  gap: 10px;
+  max-height: 500px;
+  overflow-y: auto;
+}

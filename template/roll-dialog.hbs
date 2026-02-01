@@ -1,0 +1,13 @@
+<form id="roll-dialog" class="dialog-v13 dialog-content standard-form {{cssClass}}">
+  <h4 class="divider">{{localize "PTH.BASIC_ROLL.TITLE"}}</h4>
+
+  <div class="select-wrapper">
+    {{#each rolls as |category indexA|}}
+      <fieldset>
+        {{#each category as |roll indexB|}}
+          <button class="option" data-action="roll" data-index-a="{{indexA}}" data-index-b="{{indexB}}">{{name}}</button>
+        {{/each}}
+      </fieldset>
+    {{/each}}
+  </div>
+</form>

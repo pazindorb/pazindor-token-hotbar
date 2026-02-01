@@ -1,4 +1,5 @@
 import TokenHotbar from "../hotbar/hotbar.mjs";
+import { RollDialog } from "../hotbar/roll-dialog.mjs";
 
 export function dnd5eConfig() {
   const maxHP = game.settings.get("pazindor-token-hotbar", "maxHpPath");
@@ -49,7 +50,10 @@ export function dnd5eConfig() {
       key: "basicRoll",
       label: "PTH.DND5E.BASIC_ROLL",
       icon: "fas fa-dice",
-      action: (actor) => {console.log("TODO!!!!")}
+      action: (actor) => {
+        const rolls = prepareRolls();
+        new RollDialog(actor, rolls).render(true);
+      }
     }
   ]
 
@@ -140,4 +144,26 @@ export function dnd5eConfig() {
       }
     },
   ]
+}
+
+function prepareRolls() {
+  const rolls = [[],[],[]];
+  for (const [key, ability] of Object.entries(CONFIG.DND5E.abilities)) {
+    rolls[0].push({
+      name: `${ability.label} ${game.i18n.localize("PTH.BASIC_ROLL.CHECK")}`,
+      roll: (actor, event) => actor.rollAbilityCheck({ability: key, event: event})
+    });
+    rolls[1].push({
+      name: `${ability.label} ${game.i18n.localize("PTH.BASIC_ROLL.SAVE")}`,
+      roll: (actor, event) => actor.rollSavingThrow({ability: key, event: event})
+    });
+  }
+
+  for (const [key, skill] of Object.entries(CONFIG.DND5E.skills)) {
+    rolls[2].push({
+      name: `${skill.label} ${game.i18n.localize("PTH.BASIC_ROLL.CHECK")}`,
+      roll: (actor, event) => actor.rollSkill({skill: key, event: event})
+    });
+  }
+  return rolls;
 }

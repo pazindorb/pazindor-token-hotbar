@@ -525,3 +525,16 @@
     }
   }
 }
+
+#roll-dialog {
+
+  .select-wrapper {
+    display: flex;
+
+    fieldset {
+      gap: 10px;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+  }
+}
