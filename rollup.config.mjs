@@ -1,5 +1,5 @@
 export default {
-  input: "./module/pazindor-gm-tools.mjs",
+  input: "./module/pazindor-token-hotbar.mjs",
 
   plugins: [
     {
@@ -14,7 +14,7 @@ export default {
   ],
 
   output: {
-    file: "./release/module/pazindor-gm-tools.mjs",
+    file: "./release/module/pazindor-token-hotbar.mjs",
     format: "es",
   },
 };
