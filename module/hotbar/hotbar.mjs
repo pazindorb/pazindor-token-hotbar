@@ -288,6 +288,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   }
 
   _charges(item) {
+    if (!PTH.getItemCharges) return;
     const charges = PTH.getItemCharges(item);
     if (charges != null) item.showCharges = charges;
   }
@@ -324,8 +325,6 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
 
   // ==================== ACTIONS =====================
   rollItemSlot(index, section) {
-    if (!PTH.rollItem) return;
-    
     const item = TokenHotbar.getItemFromSlot(index, section);
     if (!item) return;
     PTH.rollItem(item);

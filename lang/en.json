@@ -14,6 +14,8 @@
   "PTH.TEMPORARY_HP": "Temporary Health",
   "PTH.CONFIG_TITLE": "Configure Token Hotbar",
 
+  "PTH.NO_ITEM_ROLL_CONFIGURED": "Pazindor's Token Hotbar: Roll handler is not configured for that system.",
+
   "PTH.EFFECT_DELETE": "Do you want to remove that Effect?",
   "PTH.ITEM_SHEET": "Open Item Sheet",
   "PTH.REMOVE_ITEM": "Remove Item",

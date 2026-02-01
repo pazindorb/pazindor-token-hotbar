@@ -1,17 +1,16 @@
 import TokenHotbar from "../hotbar/hotbar.mjs";
 import { RollDialog } from "../hotbar/roll-dialog.mjs";
 
-export function dnd5eConfig() {
+export function dnd5eSpecificSettings() {
   const maxHP = game.settings.get("pazindor-token-hotbar", "maxHpPath");
   if (!maxHP) game.settings.set("pazindor-token-hotbar", "maxHpPath", "system.attributes.hp.max");
-
   const currentHP = game.settings.get("pazindor-token-hotbar", "currentHpPath");
   if (!currentHP) game.settings.set("pazindor-token-hotbar", "currentHpPath", "system.attributes.hp.value");
-
   const tempHP = game.settings.get("pazindor-token-hotbar", "tempHpPath");
   if (!tempHP) game.settings.set("pazindor-token-hotbar", "tempHpPath", "system.attributes.hp.temp");
+}
 
-
+export function dnd5eConfig() {
   PTH.rollItem = (item, options) => item.use({event: options?.event});
   PTH.getItemCharges = (item, options) => {
     const uses = item.system.uses;
