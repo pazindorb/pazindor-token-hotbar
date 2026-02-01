@@ -52,7 +52,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   static PARTS = {
     hotbar: {
       root: true,
-      template: "modules/pazindor-token-hotbar/template/hotbar.hbs"
+      template: "modules/pazindor-token-hotbar/templates/hotbar.hbs"
     }
   };
 

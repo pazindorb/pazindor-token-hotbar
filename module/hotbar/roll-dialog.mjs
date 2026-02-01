@@ -23,7 +23,7 @@ export class RollDialog extends BaseDialog {
   /** @override */
   static PARTS = {
     root: {
-      template: "modules/pazindor-token-hotbar/template/roll-dialog.hbs",
+      template: "modules/pazindor-token-hotbar/templates/roll-dialog.hbs",
       scrollable: [".scrollable"]
     }
   };

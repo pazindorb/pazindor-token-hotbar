@@ -27,7 +27,7 @@
     <div class="section">
       <div class="upper-wrapper reverse-direction">
         {{#ifCond effects.position '===' "sectionB"}}
-        {{> "modules/pazindor-token-hotbar/template/token-hotbar/effects-tracker.hbs"}}
+        {{> "modules/pazindor-token-hotbar/templates/token-hotbar/effects-tracker.hbs"}}
         {{else}}<div></div>{{/ifCond}}
       </div>
       
@@ -82,7 +82,7 @@
     <div class="section">
       <div class="upper-wrapper">
         {{#ifCond effects.position '===' "sectionA"}}
-        {{> "modules/pazindor-token-hotbar/template/token-hotbar/effects-tracker.hbs"}}
+        {{> "modules/pazindor-token-hotbar/templates/token-hotbar/effects-tracker.hbs"}}
         {{else}}<div></div>{{/ifCond}}
       </div>
       <div class="section-wrapper" style="grid-template-rows: repeat({{sectionARows}}, minmax(0, 1fr));">

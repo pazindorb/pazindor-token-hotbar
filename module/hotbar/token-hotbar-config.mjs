@@ -24,7 +24,7 @@ export class TokenHotbarConfig extends BaseDialog {
   /** @override */
   static PARTS = {
     root: {
-      template: "modules/pazindor-token-hotbar/template/token-hotbar-config.hbs",
+      template: "modules/pazindor-token-hotbar/templates/token-hotbar-config.hbs",
     }
   };
 
