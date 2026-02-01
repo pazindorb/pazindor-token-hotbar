@@ -12,13 +12,13 @@ export function dnd5eConfig() {
   if (!tempHP) game.settings.set("pazindor-token-hotbar", "tempHpPath", "system.attributes.hp.temp");
 
 
-  PTH.rollItem = (item, options) => item.use({event: options.event});
-  PTH.getItemCharges = (item) => {
+  PTH.rollItem = (item, options) => item.use({event: options?.event});
+  PTH.getItemCharges = (item, options) => {
     const uses = item.system.uses;
     if (!uses?.max) return null;
     return uses?.value;
   }
-  PTH.autofill = (actor) => {
+  PTH.autofill = (actor, options) => {
     const itemsToAdd = [];
     for (const item of actor.items) {
       if (item.system.activities.size > 0) itemsToAdd.push(item);
@@ -32,28 +32,25 @@ export function dnd5eConfig() {
       key: "longRest",
       label: "PTH.DND5E.START_REST.LONG",
       icon: "fas fa-campground",
-      action: (actor) => actor.longRest()
+      action: (actor, options) => actor.longRest()
     },
     {
       key: "shortRest",
       label: "PTH.DND5E.START_REST.SHORT",
       icon: "fas fa-utensils",
-      action: (actor) => actor.shortRest()
+      action: (actor, options) => actor.shortRest()
     },
     {
       key: "initiative",
       label: "PTH.DND5E.INITIATIVE",
       icon: "fas fa-swords",
-      action: (actor, event) => actor.rollInitiativeDialog({event: event})
+      action: (actor, options) => actor.rollInitiativeDialog({event: options?.event})
     },
     {
       key: "basicRoll",
       label: "PTH.DND5E.BASIC_ROLL",
       icon: "fas fa-dice",
-      action: (actor) => {
-        const rolls = prepareRolls();
-        new RollDialog(actor, rolls).render(true);
-      }
+      action: (actor, options) => new RollDialog(actor, prepareRolls()).render(true)
     }
   ]
 

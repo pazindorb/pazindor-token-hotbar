@@ -1,5 +1,5 @@
 import { registerHotbarRefreshHooks } from "./configs/hooks.mjs";
-import { registerTokenHotbarKeybindings } from "./configs/keybindings.mjs";
+import { overrideCoreKeybindActions, registerTokenHotbarKeybindings } from "./configs/keybindings.mjs";
 import { registerTokenHotbarSettings } from "./configs/settings.mjs";
 import { preloadHandlebarsTemplates } from "./configs/templates.mjs";
 import TokenHotbar from "./hotbar/hotbar.mjs";
@@ -21,4 +21,5 @@ Hooks.once("init", async function() {
 Hooks.once("ready", async function() {
   preloadHandlebarsTemplates();
   registerHotbarRefreshHooks();
+  overrideCoreKeybindActions();
 });

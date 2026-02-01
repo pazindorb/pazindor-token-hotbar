@@ -323,6 +323,14 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   // ==================== CONTEXT =====================
 
   // ==================== ACTIONS =====================
+  rollItemSlot(index, section) {
+    if (!PTH.rollItem) return;
+    
+    const item = TokenHotbar.getItemFromSlot(index, section);
+    if (!item) return;
+    PTH.rollItem(item);
+  }
+
   _onMouseDown(event) {
     if (event.button === 0) this._onLeftClick(event);
     if (event.button === 1) this._onMiddleClick(event);
