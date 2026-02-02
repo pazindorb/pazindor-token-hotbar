@@ -33,7 +33,7 @@
     }
   ], 
   "flags": {},
-  "description": "",
+  "description": "<p>Token Hotbar module expands the abilities of the basic Macro Hotbar by adding, the ability to roll items, manage resources, and apply temporary effects.</p>",
   "url": "",
   "manifest": "https://github.com/pazindorb/pazindor-token-hotbar/releases/download/0.8.5/module.json",
   "download": "https://github.com/pazindorb/pazindor-token-hotbar/releases/download/0.8.5/pazindor-token-hotbar.zip"
