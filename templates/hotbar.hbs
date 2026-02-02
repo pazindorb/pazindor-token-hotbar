@@ -35,8 +35,9 @@
       {{#each sectionB as |item index|}}
       <li class="slot {{item.borderColor}} {{#if item.system.toggle.toggledOn}}outline{{/if}} {{#if item.name}}full{{/if}} {{#if item.filterOut}}filter-out{{/if}} item-slot" role="button" data-action="roll" data-index="{{index}}" {{#if item.name}}data-hover="tooltip"{{/if}} data-section="sectionB">
         {{#if item.slotKeybind}}<span class="slot-keybind">{{item.slotKeybind}}</span>{{/if}}
-        {{#if item.img}}<img class="slot-icon" src="{{item.img}}">{{/if}}
-        {{#ifCond item.showCharges '!==' undefined}}<span class="show-charges">{{item.showCharges}}</span>{{/ifCond}}
+        {{#if item.img}}<img class="slot-icon" src="{{item.img}}">{{/if}} 
+        {{#ifCond item.showCharges '!==' undefined}}<span class="show-charges"><i class="fa-solid fa-bolt"></i>{{item.showCharges}}</span>{{/ifCond}}
+        {{#ifCond item.showQuantity '!==' undefined}}<div class="right-side-wrapper"><span class="show-quantity">{{item.showQuantity}}<i class="fa-solid fa-boxes-stacked"></i></span></div>{{/ifCond}} 
       </li>
       {{/each}}
       </div>
@@ -90,7 +91,8 @@
       <li class="slot {{item.borderColor}} {{#if item.system.toggle.toggledOn}}outline{{/if}} {{#if item.name}}full{{/if}} {{#if item.filterOut}}filter-out{{/if}} item-slot" role="button" data-action="roll" data-index="{{index}}" {{#if item.name}}data-hover="tooltip"{{/if}} data-section="sectionA">
         {{#if item.slotKeybind}}<span class="slot-keybind">{{item.slotKeybind}}</span>{{/if}}
         {{#if item.img}}<img class="slot-icon" src="{{item.img}}">{{/if}}
-        {{#ifCond item.showCharges '!==' undefined}}<span class="show-charges">{{item.showCharges}}</span>{{/ifCond}}
+        {{#ifCond item.showCharges '!==' undefined}}<span class="show-charges"><i class="fa-solid fa-bolt"></i>{{item.showCharges}}</span>{{/ifCond}}
+        {{#ifCond item.showQuantity '!==' undefined}}<div class="right-side-wrapper"><span class="show-quantity">{{item.showQuantity}}<i class="fa-solid fa-boxes-stacked"></i></span></div>{{/ifCond}} 
       </li>
       {{/each}}
       </div>

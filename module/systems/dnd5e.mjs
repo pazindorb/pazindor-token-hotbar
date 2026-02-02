@@ -17,6 +17,10 @@ export function dnd5eConfig() {
     if (!uses?.max) return null;
     return uses?.value;
   }
+  PTH.getItemQuantity = (item, options) => {
+    if (item.type !== "consumable") return null;
+    return item.system.quantity;
+  }
   PTH.autofill = (actor, options) => {
     const itemsToAdd = [];
     for (const item of actor.items) {

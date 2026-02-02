@@ -228,16 +228,16 @@
             }
           }
 
-          .action-type, .is-reaction, .show-charges, .slot-keybind, .equipped {
+          .right-side-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: end;
             position: absolute;
-            background-color: #3b3b3bc2;
           }
 
-          .action-type {
-            font-size: 11px;
-            margin-top: 29px;
-            border-radius: 0 10px 0 4px;
-            padding: 3px;
+          .show-charges, .show-quantity, .slot-keybind, .marker {
+            position: absolute;
+            background-color: #3b3b3bc2;
           }
 
           .slot-keybind {
@@ -245,37 +245,44 @@
             height: 15px;
             min-width: 15px;
             font-size: 13px;
-            font-family: var(--font-default);
             border-radius: 4px 0 5px 0;
             padding-right: 2px;
           }
 
-          .is-reaction {
+          .marker {
             font-size: 10px;
             margin-left: 28px;
             border-radius: 0 4px 0 10px;
             padding: 2px 3px 4px 5px;
           }
 
-          .equipped {
-            font-size: 11px;
-            margin-left: 30px;
-            padding: 2px 3px 4px 5px;
-            margin-top: -15px;
+          .show-quantity {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            margin-top: -20px;
+            padding: 3px 1px 2px 4px;
             border-radius: 10px 0 4px 0;
-            padding-bottom: 2px;
+
+            i {
+              margin-left: 2px;
+              font-size: 10px;
+            }
           }
 
           .show-charges {
-            text-align: center;
-            height: 15px;
-            width: 15px;
-            font-size: 14px;
-            font-family: var(--font-default);
-            margin-top: -15px;
-            margin-left: 15px;
-            border-radius: 10px 10px 0 0;
-            padding-bottom: 2px;
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            margin-top: -20px;
+            margin-left: 0px;
+            padding: 3px 4px 2px 1px;
+            border-radius: 0 10px 0 4px;
+
+            i {
+              margin-right: 2px;
+              font-size: 10px;
+            }
           }
         }
 

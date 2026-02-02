@@ -274,7 +274,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
       if (item) {
         // this._markers(item);
         this._runFilter(item);
-        this._charges(item);
+        this._chargesAndQuantity(item);
       }
       slots[i] = item || {filterOut: true}
       slots[i].slotKeybind = this._slotKeybind(i, sectionKey);
@@ -288,10 +288,16 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     item.filterOut = !selected.filter(item);
   }
 
-  _charges(item) {
-    if (!PTH.getItemCharges) return;
-    const charges = PTH.getItemCharges(item);
-    if (charges != null) item.showCharges = charges;
+  _chargesAndQuantity(item) {
+    if (PTH.getItemCharges) {
+      const charges = PTH.getItemCharges(item);
+      if (charges != null) item.showCharges = charges;
+    }
+
+    if (PTH.getItemQuantity) {
+      const quantity = PTH.getItemQuantity(item);
+      if (quantity != null) item.showQuantity = quantity;
+    }
   }
 
   _slotKeybind(index, sectionKey) {
