@@ -167,13 +167,13 @@ export function pf2eConfig() {
       }
     },
     {
-      name: "PTH.PF2E.STOWE_ITEM",
+      name: "PTH.PF2E.STOW_ITEM",
       icon: '<i class="fa-solid fa-box fa-fw"></i>',
       condition: li => {
         const item = TokenHotbar.itemSlotFilled(li);
         if (!item) return false;
-        const canStowe = item.actor.itemTypes.backpack.some(i => i.system.stowing && !i.isInContainer);
-        return item.system.hasOwnProperty("equipped") && canStowe;
+        const canStow = item.actor.itemTypes.backpack.some(i => i.system.stowing && !i.isInContainer);
+        return item.system.hasOwnProperty("equipped") && canStow;
       },
       callback: li => {
         const item = TokenHotbar.itemSlotFilled(li);
