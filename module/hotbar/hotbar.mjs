@@ -329,6 +329,8 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     if (!this.actor.inCombat) return false;
 
     const combatant = game.combat.combatant;
+    if (!combatant) return false;
+    
     const token = this.actor.getActiveTokens()[0];
     if (token) combatant.tokenId === token.id;
     return combatant.actorId === this.actor.id;
