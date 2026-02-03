@@ -12,6 +12,8 @@ export function registerHotbarRefreshHooks() {
 }
 
 function hasActorParent(object) {
-  if (object.parent) return hasActorParent(object.parent);
+  const parent = object.parent;
+  if (parent instanceof Actor) return true;
+  if (parent) return hasActorParent(parent);
   return object instanceof Actor;
 }
