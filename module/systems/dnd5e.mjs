@@ -12,14 +12,33 @@ export function dnd5eSpecificSettings() {
 
 export function dnd5eConfig() {
   PTH.rollItem = (item, options) => item.use({event: options?.event});
-  PTH.getItemCharges = (item, options) => {
+  PTH.getItemCharges = (item) => {
     const uses = item.system.uses;
     if (!uses?.max) return null;
     return uses?.value;
   }
-  PTH.getItemQuantity = (item, options) => {
-    if (item.type !== "consumable") return null;
-    return item.system.quantity;
+  PTH.getItemQuantity = (item) => {
+    const quantity = item.system.quantity;
+    if (quantity == null) return;
+
+    if (quantity !== 1) return quantity;
+    if (item.type === "consumable") return quantity; // For consumable always return quantity
+  }
+  PTH.generateMarker = (item) => {
+    // Spell Prepared
+    if (item.type === "spell") {
+      switch(item.system.prepared) {
+        case 0: return '<i class="fa-thin fa-sun"></i>';
+        case 1: return '<i class="fa-solid fa-sun"></i>';
+        case 2: return '<i class="fa-solid fa-certificate"></i>';
+      }
+    }
+
+    // Item Equipment
+    if (item.system.equipped) {
+      const attuned = item.system.attuned ? 'style="color: #ddc12b"' : ''
+      return `<i class="fa-solid fa-shield" ${attuned}></i>`;
+    }
   }
   PTH.autofill = (actor, options) => {
     const itemsToAdd = [];
@@ -48,7 +67,7 @@ export function dnd5eConfig() {
       key: "initiative",
       label: "PTH.DND5E.INITIATIVE",
       icon: "fas fa-swords",
-      action: (actor, options) => actor.rollInitiativeDialog({event: options?.event})
+      action: (actor, options) => actor.rollInitiativeDialog({event: options?.event, createCombatants: true})
     },
     {
       key: "basicRoll",
@@ -114,6 +133,40 @@ export function dnd5eConfig() {
         const item = TokenHotbar.itemSlotFilled(li);
         if (!item) return;
         item.update({["system.attuned"]: false})
+      }
+    },
+    {
+      name: "PTH.DND5E.PREPARE_SPELL",
+      icon: '<i class="fa-solid fa-sun"></i>',
+      condition: li => {
+        const item = TokenHotbar.itemSlotFilled(li);
+        if (!item) return false;
+
+        const prepared = item.system.prepared;
+        if (!prepared == null) return false;
+        return prepared === 0
+      },
+      callback: li => {
+        const item = TokenHotbar.itemSlotFilled(li);
+        if (!item) return;
+        item.update({["system.prepared"]: 1});
+      }
+    },
+    {
+      name: "PTH.DND5E.UNPREPARE_SPELL",
+      icon: '<i class="fa-solid fa-sun"></i>',
+      condition: li => {
+        const item = TokenHotbar.itemSlotFilled(li);
+        if (!item) return false;
+
+        const prepared = item.system.prepared;
+        if (!prepared == null) return false;
+        return prepared === 1
+      },
+      callback: li => {
+        const item = TokenHotbar.itemSlotFilled(li);
+        if (!item) return;
+        item.update({["system.prepared"]: 0});
       }
     },
   ]

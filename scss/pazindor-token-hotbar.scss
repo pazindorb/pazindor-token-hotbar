@@ -238,6 +238,8 @@
           .show-charges, .show-quantity, .slot-keybind, .marker {
             position: absolute;
             background-color: #3b3b3bc2;
+            color: #ffffff;
+            text-shadow: -1px 0 #bb5f08, 0 1px #bb5f08, 1px 0 #bb5f08, 0 -1px #bb5f08;
           }
 
           .slot-keybind {
@@ -253,7 +255,7 @@
             font-size: 10px;
             margin-left: 28px;
             border-radius: 0 4px 0 10px;
-            padding: 2px 3px 4px 5px;
+            padding: 2px 2px 3px 4px;
           }
 
           .show-quantity {
@@ -537,10 +539,12 @@
 
   .select-wrapper {
     display: flex;
+    min-width: 400px;
 
     fieldset {
       gap: 10px;
       max-height: 500px;
+      width: 100%;
       overflow-y: auto;
     }
   }

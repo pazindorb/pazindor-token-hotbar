@@ -63,6 +63,32 @@
   "PTH.DND5E.EQUIP_ITEM": "Equip Item",
   "PTH.DND5E.UNEQUIP_ITEM": "Unequip Item",
   "PTH.DND5E.ATTUNE_ITEM": "Attune Item",
-  "PTH.DND5E.UNATTUNE_ITEM": "Unattune Item"
+  "PTH.DND5E.UNATTUNE_ITEM": "Unattune Item",
+  "PTH.DND5E.PREPARE_SPELL": "Prepare Spell",
+  "PTH.DND5E.UNPREPARE_SPELL": "Unprepare Spell",
+
+
+  "PTH.PF2E.FILTER.ACTION_1": "1 Action",
+  "PTH.PF2E.FILTER.ACTION_2": "2 Action",
+  "PTH.PF2E.FILTER.ACTION_3": "3 Action",
+  "PTH.PF2E.FILTER.REACTION": "Reaction",
+  "PTH.PF2E.FILTER.FREE_ACTION": "Free Action",
+
+  "PTH.PF2E.START_REST": "Start Rest",
+  "PTH.PF2E.BASIC_ROLL": "Roll Check/Save",
+  "PTH.PF2E.INITIATIVE": "Roll for Initiative",
+
+  "PTH.PF2E.HOLD_ITEM_1H": "Hold in 1 Hand",
+  "PTH.PF2E.HOLD_ITEM_2H": "Hold in 2 Hand",
+  "PTH.PF2E.WEAR_ITEM": "Wear",
+  "PTH.PF2E.STOWE_ITEM": "Stowe",
+  "PTH.PF2E.DROP_ITEM": "Drop",
+  "PTH.PF2E.INVEST_ITEM": "Investment",
+  "PTH.PF2E.LOWER_SHIELD": "Lower Shield",
+  "PTH.PF2E.RAISE_SHIELD": "Raise Shield",
+
+  "PTH.PF2E.SPELL.SELECT_RANK": "Select Spell Rank",
+  "PTH.PF2E.SPELL.RANK": "Rank: ",
+  "PTH.PF2E.INITIATIVE_SELECT": "Select Initiative Skill"
 
 }

@@ -272,7 +272,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
       const original = items.get(itemId);
       const item = original ? foundry.utils.deepClone(original) : null;
       if (item) {
-        // this._markers(item);
+        this._marker(item);
         this._runFilter(item);
         this._chargesAndQuantity(item);
       }
@@ -286,6 +286,11 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     if (!this.filter) return;
     const selected = this.filter.options[this.filter.index];
     item.filterOut = !selected.filter(item);
+  }
+
+  _marker(item) {
+    if (!PTH.generateMarker) return;
+    item.marker = PTH.generateMarker(item);
   }
 
   _chargesAndQuantity(item) {
@@ -333,12 +338,12 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   // ==================== ACTIONS =====================
   _onRoll(event, target) {
     const dataset = target.dataset;
-    this.rollItemSlot(dataset.index, dataset.section)
+    this.rollItemSlot(dataset.index, dataset.section, event)
   }
 
-  rollItemSlot(index, section) {
+  rollItemSlot(index, section, event) {
     const item = TokenHotbar.getItemFromSlot(index, section);
-    if (item) PTH.rollItem(item);
+    if (item) PTH.rollItem(item, event);
   }
 
   _onMouseDown(event) {
@@ -562,8 +567,8 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
 
     if (hover === "tooltip") {
       const html = $(this.element);
-      // Hide tooltip
-      if (event.type !== "mouseover") {
+      // Hide tooltip when hovering out or context menu is open
+      if (event.type !== "mouseover" || ui.context) {
         PDE.TooltipCreator.hideTooltip(event, html);
         return;
       }
@@ -575,13 +580,13 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
       else                        object = await fromUuid(dataset.uuid);                                  // Get from uuid
       if (!object) return;
 
-      const left = target.offsetLeft - 130;
+      const left = target.offsetLeft - 225;
       const bottom = dataset.effectId ? event.currentTarget.offsetHeight + 30
                       : target.parentElement.offsetHeight + 30
 
       const position = {
         maxHeight: "500px",
-        minWidth: "300px",
+        minWidth: "500px",
         left: `${left}px`, 
         bottom: `${bottom}px`,
         top: ""
@@ -613,9 +618,15 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     if (!droppedObject) return;
 
     switch (droppedObject.type) {
-      case "Item": await this._onDropItem(droppedObject, index, section); break;
-      case "Slot": await this._onDropSlot(droppedObject, index, section); break;
+      case "Item":  await this._onDropItem(droppedObject, index, section); break;
+      case "Slot":  await this._onDropSlot(droppedObject, index, section); break;
+      default:      await this._onDropOther(droppedObject, index, section); // Handle by system
     }
+  }
+
+  async _onDropOther(dropped, index, section) {
+    if (!PTH.customDropHandler) return;
+    await PTH.customDropHandler(dropped, index, section, this.actor);
   }
 
   async _onDropItem(dropped, index, section) {
