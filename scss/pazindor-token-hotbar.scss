@@ -546,6 +546,12 @@
       max-height: 500px;
       width: 100%;
       overflow-y: auto;
+      overflow-x: hidden;
+
+      button {
+        width: max-content;
+        min-width: 100%;
+      }
     }
   }
 }

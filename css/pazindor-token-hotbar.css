@@ -451,4 +451,10 @@
   max-height: 500px;
   width: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
+}
+#roll-dialog .select-wrapper fieldset button {
+  width: -moz-max-content;
+  width: max-content;
+  min-width: 100%;
 }

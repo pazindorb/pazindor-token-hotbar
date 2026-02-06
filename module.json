@@ -6,10 +6,10 @@
     "email": "xxpazindorxx@gmail.com",
     "discord": "Patryk#6024"
   }],
-  "version": "0.8.5",
+  "version": "0.8.6",
   "compatibility": {
     "minimum": "13",
-    "verified": "13.350"
+    "verified": "13.351"
   },
   "relationships": {
     "requires": [
@@ -17,8 +17,8 @@
         "id": "pazindor-dev-essentials",
         "type": "module",
         "compatibility": {
-          "minimum": "0.8.5",
-          "verified": "0.8.5"
+          "minimum": "0.8.6",
+          "verified": "0.8.6"
         }
       }
     ]
@@ -35,6 +35,6 @@
   "flags": {},
   "description": "<p>Token Hotbar module expands the abilities of the basic Macro Hotbar by adding, the ability to roll items, manage resources, and apply temporary effects.</p>",
   "url": "",
-  "manifest": "https://github.com/pazindorb/pazindor-token-hotbar/releases/download/0.8.5/module.json",
-  "download": "https://github.com/pazindorb/pazindor-token-hotbar/releases/download/0.8.5/pazindor-token-hotbar.zip"
+  "manifest": "https://github.com/pazindorb/pazindor-token-hotbar/releases/download/0.8.6/module.json",
+  "download": "https://github.com/pazindorb/pazindor-token-hotbar/releases/download/0.8.6/pazindor-token-hotbar.zip"
 }

@@ -30,6 +30,7 @@ export class TokenHotbarConfig extends BaseDialog {
 
   _initializeApplicationOptions(options) {
     const initialized = super._initializeApplicationOptions(options);
+    initialized.window.resizable = true;
     initialized.actions.save = this._onSave;
     return initialized;
   }
