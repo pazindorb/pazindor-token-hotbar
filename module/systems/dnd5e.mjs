@@ -11,7 +11,29 @@ export function dnd5eSpecificSettings() {
 }
 
 export function dnd5eConfig() {
-  PTH.rollItem = (item, options) => item.use({event: options?.event});
+  PTH.customDropHandler = dropHandler;
+  PTH.customSlotConfigHandler = (slot, actor) => {
+    if (slot.slotType === "activity") {
+      fromUuid(slot.uuid).then(activity => activity.sheet.render(true));
+    }
+  }
+
+  PTH.handleSlotUse = (slot, options) => {
+    switch (slot.slotType) {
+      case "item":
+        const item = ui.hotbar.actor.items.get(slot.itemId);
+        if (item) item.use({event: options?.event});
+        break;
+
+      case "macro":
+        fromUuid(slot.uuid).then(macro => macro.execute());
+        break;
+
+      case "activity":
+        fromUuid(slot.uuid).then(activity => {if (activity.canUse) activity.use()});
+        break;
+    }
+  };
   PTH.getItemCharges = (item) => {
     const uses = item.system.uses;
     if (!uses?.max) return null;
@@ -24,20 +46,34 @@ export function dnd5eConfig() {
     if (quantity !== 1) return quantity;
     if (item.type === "consumable") return quantity; // For consumable always return quantity
   }
-  PTH.generateMarker = (item) => {
-    // Spell Prepared
-    if (item.type === "spell") {
-      switch(item.system.prepared) {
-        case 0: return '<i class="fa-thin fa-sun"></i>';
-        case 1: return '<i class="fa-solid fa-sun"></i>';
-        case 2: return '<i class="fa-solid fa-certificate"></i>';
+  PTH.generateMarker = (slot) => {
+    if (slot.slotType === "item") {
+      // Spell Prepared
+      if (slot.type === "spell") {
+        switch(slot.system.prepared) {
+          case 0: return '<i class="fa-thin fa-sun"></i>';
+          case 1: return '<i class="fa-solid fa-sun"></i>';
+          case 2: return '<i class="fa-solid fa-certificate"></i>';
+        }
+      }
+
+      // Item Equipment
+      if (slot.system.equipped) {
+        const attuned = slot.system.attuned ? 'style="color: #ddc12b"' : ''
+        return `<i class="fa-solid fa-shield" ${attuned}></i>`;
       }
     }
 
-    // Item Equipment
-    if (item.system.equipped) {
-      const attuned = item.system.attuned ? 'style="color: #ddc12b"' : ''
-      return `<i class="fa-solid fa-shield" ${attuned}></i>`;
+    if (slot.slotType === "activity") {
+      switch(slot.activityType) {
+        case "attack": return '<i class="fa-solid fa-sword"></i>';
+        case "cast": return '<i class="fa-solid fa-wand-magic-sparkles"></i>';
+        case "save": return '<i class="fa-solid fa-block-brick-fire"></i>';
+        case "check": return '<i class="fa-solid fa-hand-fist"></i>';
+        case "heal": return '<i class="fa-solid fa-heart"></i>';
+        case "damage": return '<i class="fa-solid fa-droplet"></i>';
+        default: return '<i class="fa-solid fa-play"></i>';
+      }
     }
   }
   PTH.autofill = (actor, options) => {
@@ -174,32 +210,59 @@ export function dnd5eConfig() {
   // Filters
   PTH.filters = [
     {
+      label: "PTH.DND5E.FILTER.ACTIVITY",
+      icon: "fas fa-play",
+      filter: slot =>  slot.slotType === "activity"
+    },
+    {
       label: "PTH.DND5E.FILTER.ACTION",
       icon: "fas fa-cube",
-      filter: item => {
-        if (!item.system.activities) return false;
-        return !!item.system.activities.find(activity => activity.activation.type === "action");
+      filter: slot => {
+        if (slot.slotType === "item") {
+          if (!slot.system.activities) return false;
+          return !!slot.system.activities.find(activity => activity.activation.type === "action");
+        }
+
+        if (slot.slotType === "activity") {
+          return slot.activation === "action"
+        }
+        return false;
       }
     },
     {
       label: "PTH.DND5E.FILTER.BONUS_ACTION",
       icon: "far fa-cube",
-      filter: item => {
-        if (!item.system.activities) return false;
-        return !!item.system.activities.find(activity => activity.activation.type === "bonus");
+      filter: slot => {
+        if (slot.slotType === "item") {
+          if (!slot.system.activities) return false;
+          return !!slot.system.activities.find(activity => activity.activation.type === "bonus");
+        }
+
+        if (slot.slotType === "activity") {
+          return slot.activation === "bonus"
+        }
+        return false;
       }
     },
     {
       label: "PTH.DND5E.FILTER.REACTION",
       icon: "fas fa-reply",
-      filter: item => {
-        if (!item.system.activities) return false;
-        return !!item.system.activities.find(activity => activity.activation.type === "reaction");
+      filter: slot => {
+        if (slot.slotType === "item") {
+          if (!slot.system.activities) return false;
+          return !!slot.system.activities.find(activity => activity.activation.type === "reaction");
+        }
+
+        if (slot.slotType === "activity") {
+          return slot.activation === "reaction"
+        }
+        return false;
       }
     },
   ]
 }
 
+//============== OTHER FUNCTIONS ==============
 function prepareRolls() {
   const rolls = [[],[],[]];
   for (const [key, ability] of Object.entries(CONFIG.DND5E.abilities)) {
@@ -220,4 +283,20 @@ function prepareRolls() {
     });
   }
   return rolls;
+}
+
+async function dropHandler(dropped, index, section, actor) {
+  if (!actor) return;
+  if (dropped.type !== "Activity") return;
+
+  const activity = await fromUuid(dropped.uuid);
+  await actor.update({[`flags.tokenHotbar.${section}.${index}`]: {
+    slotType: "activity",
+    img: activity.item.img,
+    name: activity.item.name + " - " + activity.name,
+    uuid: activity.uuid,
+    activityType: activity.type,
+    activation: activity.activation.type,
+    description: `<p>@UUID[${activity.item.uuid}]</p>`
+  }});
 }

@@ -12,7 +12,18 @@ export function pf2eSpecificSettings() {
 
 export function pf2eConfig() {
   PTH.customDropHandler = dropHandler;
-  PTH.rollItem = (item, options) => rollPF2eItem(item, options);
+  PTH.handleSlotUse = (slot, options) => {
+    switch (slot.slotType) {
+      case "item":
+        const item = ui.hotbar.actor.items.get(slot.itemId);
+        if (item) rollPF2eItem(item, options);
+        break;
+
+      case "macro":
+        fromUuid(slot.uuid).then(macro => macro.execute());
+        break;
+    }
+  };
   PTH.getItemCharges = (item) => {
     const frequency = item.system?.frequency;
     if (frequency?.max) return frequency.value;
@@ -28,25 +39,27 @@ export function pf2eConfig() {
     if (quantity !== 1) return quantity;
     if (item.type === "consumable") return quantity; // For consumable always return quantity
   }
-  PTH.generateMarker = (item) => {
-    const equipped = item.system.equipped;
-    if (!equipped) return;
+  PTH.generateMarker = (slot) => {
+    if (slot.slotType === "item") {
+      const equipped = slot.system.equipped;
+      if (!equipped) return;
 
-    const invested = equipped.invested ? 'style="color: #93c5c9"' : '';
+      const invested = equipped.invested ? 'style="color: #93c5c9"' : '';
 
-    switch (equipped.carryType) {
-      case "held": 
-        if (equipped.handsHeld === 1) return `<i class="fa-solid fa-hand-back-fist fa-fwt" ${invested}></i>`;
-        if (equipped.handsHeld === 2) return `<span class="fa-stack fa-fw fa-2xs"><i class="fa-solid fa-hand-back-fist fa-stack-2x" ${invested}></i><i class="fa-solid fa-2 fa-inverse fa-stack-1x" style="color: #000000; font-size: 8px; left: 1px; bottom: 1px; text-shadow:none"></i></span>`
+      switch (equipped.carryType) {
+        case "held": 
+          if (equipped.handsHeld === 1) return `<i class="fa-solid fa-hand-back-fist fa-fwt" ${invested}></i>`;
+          if (equipped.handsHeld === 2) return `<span class="fa-stack fa-fw fa-2xs"><i class="fa-solid fa-hand-back-fist fa-stack-2x" ${invested}></i><i class="fa-solid fa-2 fa-inverse fa-stack-1x" style="color: #000000; font-size: 8px; left: 1px; bottom: 1px; text-shadow:none"></i></span>`
 
-      case "worn": 
-        return `<i class="fa-solid fa-shirt fa-fw" ${invested}></i>`;
+        case "worn": 
+          return `<i class="fa-solid fa-shirt fa-fw" ${invested}></i>`;
 
-      case "stowed": 
-        return `<i class="fa-solid fa-box fa-fw"></i>`;
+        case "stowed": 
+          return `<i class="fa-solid fa-box fa-fw"></i>`;
 
-      case "dropped": 
-        return `<i class="fa-solid fa-grip-lines fa-fw"></i>`
+        case "dropped": 
+          return `<i class="fa-solid fa-grip-lines fa-fw"></i>`
+      }
     }
   }
   // TODO autofill?
@@ -376,10 +389,17 @@ async function dropHandler(dropped, index, section, actor) {
   const action = actor.system.actions[dropped.index];
   if (!action) return;
 
-  await actor.update({[`flags.tokenHotbar.${section}.${index}`]: action.item.id});
+  await actor.update({[`flags.tokenHotbar.${section}.${index}`]: {
+    slotType: "item",
+    img: action.item.img,
+    name: action.item.name,
+    uuid: action.item.uuid,
+    itemId: action.item.id
+  }});
 }
 
 function itemCostFilter(item, filterValue) {
+  if (item.slotType !== "item") return false;
   if (item.system.time?.value) {
     return item.system.time.value.toLowerCase() == filterValue;
   }

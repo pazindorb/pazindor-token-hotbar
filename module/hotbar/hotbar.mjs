@@ -283,6 +283,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
         slot = this._prepareItemSlot(slot);
       }
       this._runFilter(slot);
+      this._marker(slot);
       slots[i] = slot || {filterOut: true}
       slots[i].slotKeybind = this._slotKeybind(i, sectionKey);
     }
@@ -311,7 +312,6 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   _prepareItemSlot(slot) {
     const original = this.actor.items.get(slot.itemId);
     const item = original ? foundry.utils.deepClone(original) : null;
-    this._marker(item);
     this._chargesAndQuantity(item);
     item.slotType = "item";
     return item;
@@ -324,9 +324,10 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     slot.filterOut = !selected.filter(slot);
   }
 
-  _marker(item) {
+  _marker(slot) {
+    if (!slot) return;
     if (!PTH.generateMarker) return;
-    item.marker = PTH.generateMarker(item);
+    slot.marker = PTH.generateMarker(slot);
   }
 
   _chargesAndQuantity(item) {
@@ -645,6 +646,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
           object = await fromUuid(slot.uuid);
           dataset.header = slot.name;
           dataset.img = slot.img;
+          if (slot.description) dataset.description = slot.description;
         }
       }   
       else if (dataset.effectId)  {   // Get effect
