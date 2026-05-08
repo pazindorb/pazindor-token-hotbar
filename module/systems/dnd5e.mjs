@@ -66,13 +66,13 @@ export function dnd5eConfig() {
 
     if (slot.slotType === "activity") {
       switch(slot.activityType) {
-        case "attack": return '<i class="fa-solid fa-sword"></i>';
-        case "cast": return '<i class="fa-solid fa-wand-magic-sparkles"></i>';
-        case "save": return '<i class="fa-solid fa-block-brick-fire"></i>';
-        case "check": return '<i class="fa-solid fa-hand-fist"></i>';
-        case "heal": return '<i class="fa-solid fa-heart"></i>';
-        case "damage": return '<i class="fa-solid fa-droplet"></i>';
-        default: return '<i class="fa-solid fa-play"></i>';
+        case "attack": return '<i class="fa-solid fa-sword" style="color: #63c2da"></i>';
+        case "cast": return '<i class="fa-solid fa-wand-magic-sparkles" style="color: #63c2da"></i>';
+        case "save": return '<i class="fa-solid fa-block-brick-fire" style="color: #63c2da"></i>';
+        case "check": return '<i class="fa-solid fa-hand-fist" style="color: #63c2da"></i>';
+        case "heal": return '<i class="fa-solid fa-heart" style="color: #63c2da"></i>';
+        case "damage": return '<i class="fa-solid fa-droplet" style="color: #63c2da"></i>';
+        default: return '<i class="fa-solid fa-play" style="color: #63c2da"></i>';
       }
     }
   }
