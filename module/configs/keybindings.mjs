@@ -17,7 +17,7 @@ export function registerTokenHotbarKeybindings() {
     const keybinding = {
       name: `[Section A] Token Hotbar Slot (${i+1})`,
       editable: [],
-      onDown: context => _onItemSlot(context, i, "sectionA"),
+      onDown: context => _onSlot(context, i, "sectionA"),
       precedence: CONST.KEYBINDING_PRECEDENCE.DEFERRED,
     }
     if (defaultKeybindings[i]) keybinding.editable.push({key: defaultKeybindings[i]});
@@ -29,7 +29,7 @@ export function registerTokenHotbarKeybindings() {
     const keybinding = {
       name: `[Section B] Token Hotbar Slot (${i+1})`,
       editable: [],
-      onDown: context => _onItemSlot(context, i, "sectionB"),
+      onDown: context => _onSlot(context, i, "sectionB"),
       precedence: CONST.KEYBINDING_PRECEDENCE.DEFERRED,
     }
     game.keybindings.register("pazindor-token-hotbar", `tokenHotbarB${i}`, keybinding);
@@ -41,9 +41,9 @@ function _onEndTurn(context) {
   ui.hotbar._onEndTurn();
 }
 
-function _onItemSlot(context, index, section) {
+function _onSlot(context, index, section) {
   if (!ui.hotbar.showTokenHotbar) return;
-  ui.hotbar.rollItemSlot(index, section);
+  ui.hotbar.useSlot(index, section);
 }
 
 export function overrideCoreKeybindActions() {

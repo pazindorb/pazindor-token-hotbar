@@ -33,7 +33,7 @@
       
       <div class="section-wrapper" style="grid-template-rows: repeat({{sectionBRows}}, minmax(0, 1fr));">
       {{#each sectionB as |item index|}}
-      <li class="slot {{item.borderColor}} {{#if item.system.toggle.toggledOn}}outline{{/if}} {{#if item.name}}full{{/if}} {{#if item.filterOut}}filter-out{{/if}} item-slot" role="button" data-action="roll" data-index="{{index}}" {{#if item.name}}data-hover="tooltip"{{/if}} data-section="sectionB">
+      <li class="slot {{item.borderColor}} {{#if item.system.toggle.toggledOn}}outline{{/if}} {{#if item.name}}full{{/if}} {{#if item.filterOut}}filter-out{{/if}} pth-slot" role="button" data-action="useSlot" data-index="{{index}}" {{#if item.name}}data-hover="tooltip"{{/if}} data-section="sectionB">
         {{#if item.slotKeybind}}<span class="slot-keybind">{{item.slotKeybind}}</span>{{/if}}
         {{#if item.marker}}<div class="right-side-wrapper"><span class="marker">{{{item.marker}}}</span></div>{{/if}}
         {{#if item.img}}<img class="slot-icon" src="{{item.img}}">{{/if}} 
@@ -89,7 +89,7 @@
       </div>
       <div class="section-wrapper" style="grid-template-rows: repeat({{sectionARows}}, minmax(0, 1fr));">
       {{#each sectionA as |item index|}}
-      <li class="slot {{item.borderColor}} {{#if item.system.toggle.toggledOn}}outline{{/if}} {{#if item.name}}full{{/if}} {{#if item.filterOut}}filter-out{{/if}} item-slot" role="button" data-action="roll" data-index="{{index}}" {{#if item.name}}data-hover="tooltip"{{/if}} data-section="sectionA">
+      <li class="slot {{item.borderColor}} {{#if item.system.toggle.toggledOn}}outline{{/if}} {{#if item.name}}full{{/if}} {{#if item.filterOut}}filter-out{{/if}} pth-slot" role="button" data-action="useSlot" data-index="{{index}}" {{#if item.name}}data-hover="tooltip"{{/if}} data-section="sectionA">
         {{#if item.slotKeybind}}<span class="slot-keybind">{{item.slotKeybind}}</span>{{/if}}
         {{#if item.marker}}<div class="right-side-wrapper"><span class="marker">{{{item.marker}}}</span></div>{{/if}}
         {{#if item.img}}<img class="slot-icon" src="{{item.img}}">{{/if}}

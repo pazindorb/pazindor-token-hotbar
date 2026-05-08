@@ -6,6 +6,8 @@
   "PTH.FILL": "Fill Token Hotbar",
   "PTH.FILTER.SELECT": "Selected Filter: ",
   "PTH.FILTER.NONE": "None",
+  "PTH.FILTER.MACRO": "Macro",
+  "PTH.FILTER.ITEM": "Item",
 
   "PTH.DBCLICK": "Double click to open sheet",
   "PTH.CURRENT_HP": "Current Health",
@@ -14,11 +16,11 @@
   "PTH.TEMPORARY_HP": "Temporary Health",
   "PTH.CONFIG_TITLE": "Configure Token Hotbar",
 
-  "PTH.NO_ITEM_ROLL_CONFIGURED": "Pazindor's Token Hotbar: Roll handler is not configured for that system.",
+  "PTH.NO_SLOT_USE_CONFIGURED": "Pazindor's Token Hotbar: Use Slot handler is not configured for that system.",
 
   "PTH.EFFECT_DELETE": "Do you want to remove that Effect?",
-  "PTH.ITEM_SHEET": "Open Item Sheet",
-  "PTH.REMOVE_ITEM": "Remove Item",
+  "PTH.OPEN_CONFIG": "Open Configuration",
+  "PTH.EMPTY_SLOT": "Remove Slot",
   "PTH.END_TURN": "End Turn",
 
   "PTH.HC.GLOBAL": "Global options",

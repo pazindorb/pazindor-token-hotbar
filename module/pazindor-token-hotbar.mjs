@@ -12,7 +12,7 @@ Hooks.once("init", async function() {
   CONFIG.ui.hotbar = TokenHotbar;
 
   window.PTH = {
-    rollItem: () => {ui.notifications.warn(game.i18n.localize("PTH.NO_ITEM_ROLL_CONFIGURED"))}
+    handleSlotUse: () => {ui.notifications.warn(game.i18n.localize("PTH.NO_SLOT_USE_CONFIGURED"))}
   };
   switch (game.system.id) {
     case "dnd5e": dnd5eConfig(); break;

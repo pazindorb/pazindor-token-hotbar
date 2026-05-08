@@ -2,25 +2,26 @@ import { openTokenHotbarConfig } from "./token-hotbar-config.mjs";
 
 export default class TokenHotbar extends foundry.applications.ui.Hotbar { 
 
-  static getItemIdFromSlot(index, sectionKey) {
+  static getSlot(index, sectionKey) {
     if (!ui.hotbar.showTokenHotbar) return;
     if (index == undefined || !sectionKey) return;
     const section = ui.hotbar.actor.flags.tokenHotbar[sectionKey];
-    const itemId = section[index];
-    return itemId;
+    const slot = section[index];
+    if (!slot) return;
+    return slot;
   }
 
-  static getItemFromSlot(index, sectionKey) {
-    const itemId = TokenHotbar.getItemIdFromSlot(index, sectionKey);
-    if (!itemId) return;
-    return ui.hotbar.actor.items.get(itemId);
+  static slotFilled(li) {
+    if (!li.classList.contains("pth-slot")) return false;
+    const dataset = li.dataset;
+    const slot = TokenHotbar.getSlot(dataset.index, dataset.section);
+    return slot ?? false;
   }
 
   static itemSlotFilled(li) {
-    const itemSlot = li.classList.contains("item-slot");
-    if (!itemSlot) return false;
-    const dataset = li.dataset;
-    const item = TokenHotbar.getItemFromSlot(dataset.index, dataset.section);
+    const slot = TokenHotbar.slotFilled(li);
+    if (slot.slotType !== "item") return false;
+    const item = ui.hotbar.actor.items.get(slot.itemId);
     return item ?? false;
   }
 
@@ -39,7 +40,17 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
           {
             label: "PTH.FILTER.NONE",
             icon: "fas fa-border-all",
-            filter: item => true
+            filter: slot => true
+          },
+          {
+            label: "PTH.FILTER.MACRO",
+            icon: "fas fa-code",
+            filter: slot => slot.slotType === "macro"
+          },
+          {
+            label: "PTH.FILTER.ITEM",
+            icon: "fas fa-suitcase",
+            filter: slot => slot.slotType === "item"
           },
           ...PTH.filters
         ]
@@ -66,7 +77,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     initialized.actions.filter = this._onFilterChange;
     initialized.actions.autofill = this._onAutofill;
     initialized.actions.original = this._onOriginal;
-    initialized.actions.roll = this._onRoll;
+    initialized.actions.useSlot = this._onUseSlot;
     
     // Register system specific actions
     if (PTH.actions) {
@@ -105,21 +116,18 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
 
     // Register default settings
     options.push({
-      name: "PTH.ITEM_SHEET",
+      name: "PTH.OPEN_CONFIG",
       icon: '<i class="fa-solid fa-pen-to-square"></i>',
-      condition: li => TokenHotbar.itemSlotFilled(li),
-      callback: li => {
-        const item = TokenHotbar.itemSlotFilled(li);
-        if (item) item.sheet.render(true);
-      }
+      condition: li => TokenHotbar.slotFilled(li),
+      callback: li => this._onOpenSlotConfig(li.dataset.index, li.dataset.section)
     });
     options.push({
-      name: "PTH.REMOVE_ITEM",
+      name: "PTH.EMPTY_SLOT",
       icon: '<i class="fa-solid fa-xmark"></i>',
-      condition: li => TokenHotbar.itemSlotFilled(li),
+      condition: li => TokenHotbar.slotFilled(li),
       callback: li => {
         const dataset = li.dataset;
-        this.actor.update({[`flags.tokenHotbar.${dataset.section}.${dataset.index}`]: ""});
+        this.actor.update({[`flags.tokenHotbar.${dataset.section}.${dataset.index}`]: null});
       }
     });
   }
@@ -262,30 +270,58 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
 
   _prepareSectionSlots(sectionKey, tokenHotbarSettings, actorConfig) {
     const section = actorConfig[sectionKey];
-    const items = this.actor.items;
-
     const sc = tokenHotbarSettings[sectionKey];
     const size = sc.rows * sc.columns;
+
+    const valid = this._validateSection(section, size, sectionKey);
+    if (!valid) return [];
+
     const slots = [];
     for (let i = 0; i < size; i++) {
-      const itemId = section[i];
-      const original = items.get(itemId);
-      const item = original ? foundry.utils.deepClone(original) : null;
-      if (item) {
-        this._marker(item);
-        this._runFilter(item);
-        this._chargesAndQuantity(item);
+      let slot = section[i];
+      if (slot?.slotType === "item") {
+        slot = this._prepareItemSlot(slot);
       }
-      slots[i] = item || {filterOut: true}
+      this._runFilter(slot);
+      slots[i] = slot || {filterOut: true}
       slots[i].slotKeybind = this._slotKeybind(i, sectionKey);
     }
     return slots;
   }
 
-  _runFilter(item) {
+  _validateSection(section, size, sectionKey) {
+    // We need to remove slots if items/macros were deleted
+    const updateData = {};
+    let valid = true;
+    for (let i = 0; i < size; i++) {
+      const slot = section[i];
+      if (!slot) continue;
+
+      const obj = fromUuidSync(slot.uuid);
+      if (!obj) {
+        valid = false;
+        updateData[`flags.tokenHotbar.${sectionKey}.${i}`] = null;
+      }
+    }
+
+    if (valid === false) this.actor.update(updateData);
+    return valid;
+  }
+
+  _prepareItemSlot(slot) {
+    const original = this.actor.items.get(slot.itemId);
+    const item = original ? foundry.utils.deepClone(original) : null;
+    this._marker(item);
+    this._chargesAndQuantity(item);
+    item.slotType = "item";
+    return item;
+  }
+
+  _runFilter(slot) {
+    if (!slot) return;
     if (!this.filter) return;
     const selected = this.filter.options[this.filter.index];
-    item.filterOut = !selected.filter(item);
+    slot.filterOut = !selected.filter(slot);
   }
 
   _marker(item) {
@@ -338,14 +374,14 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   // ==================== CONTEXT =====================
 
   // ==================== ACTIONS =====================
-  _onRoll(event, target) {
+  _onUseSlot(event, target) {
     const dataset = target.dataset;
-    this.rollItemSlot(dataset.index, dataset.section, event)
+    this.useSlot(dataset.index, dataset.section);
   }
 
-  rollItemSlot(index, section, event) {
-    const item = TokenHotbar.getItemFromSlot(index, section);
-    if (item) PTH.rollItem(item, event);
+  useSlot(index, section) {
+    const slot = TokenHotbar.getSlot(index, section);
+    if (slot) PTH.handleSlotUse(slot, event);
   }
 
   _onMouseDown(event) {
@@ -364,10 +400,8 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
 
   _onMiddleClick(event) {
     const dataset = event.target.dataset;
-
-    if (event.target.classList.contains("item-slot")) {
-      const item = TokenHotbar.getItemFromSlot(dataset.index, dataset.section);
-      if (item) item.sheet.render(true);
+    if (event.target.classList.contains("pth-slot")) {
+      this._onOpenSlotConfig(dataset.index, dataset.section)
     }
     if (event.target.classList.contains("effect-img")) {
       const effect = this._getEffect(dataset.effectId);
@@ -383,6 +417,23 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
       if (!confirmed) return;
       const effect = this._getEffect(dataset.effectId);
       if (effect) effect.delete();
+    }
+  }
+
+  _onOpenSlotConfig(index, sectionKey) {
+    const slot = TokenHotbar.getSlot(index, sectionKey);
+    if (!slot) return;
+
+    if (slot.slotType === "item") {
+      const item = ui.hotbar.actor.items.get(slot.itemId);
+      if (item) item.sheet.render(true);
+    }
+    else if (slot.slotType === "macro") {
+      fromUuid(slot.uuid).then(macro => macro.sheet.render(true))
+    }
+    else {
+      if (!PTH.customSlotConfigHandler) return;
+      PTH.customSlotConfigHandler(slot, this.actor);
     }
   }
 
@@ -518,7 +569,13 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
           break;
         }
       }
-      updateData[`section${section}`][counter] = item.id;
+      updateData[`section${section}`][counter] = {
+        slotType: "item",
+        itemId: item.id,
+        name: item.name,
+        img: item.img,
+        uuid: item.uuid
+      };
       counter++;
     }
 
@@ -528,7 +585,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   async _clearSection(section, sectionKey) {
     const updateData = {}
     for (const key of Object.keys(section)) {
-      updateData[`flags.tokenHotbar.${sectionKey}.${key}`] = "";
+      updateData[`flags.tokenHotbar.${sectionKey}.${key}`] = null;
     }
     await this.actor.update(updateData);
   }
@@ -577,9 +634,25 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
 
       // Show tooltip
       let object;
-      if (dataset.section)        object = TokenHotbar.getItemFromSlot(dataset.index, dataset.section);   // Get item
-      else if (dataset.effectId)  object = this._getEffect(dataset.effectId);                             // Get effect
-      else                        object = await fromUuid(dataset.uuid);                                  // Get from uuid
+      if (dataset.section) {          // Get section slot
+        const slot = TokenHotbar.getSlot(dataset.index, dataset.section);
+        if (!slot) return;
+
+        if (slot.slotType === "item") {
+          object = ui.hotbar.actor.items.get(slot.itemId);
+        }
+        else {
+          object = await fromUuid(slot.uuid);
+          dataset.header = slot.name;
+          dataset.img = slot.img;
+        }
+      }   
+      else if (dataset.effectId)  {   // Get effect
+        object = this._getEffect(dataset.effectId);
+      }                        
+      else {                          // Get from uuid
+        object = await fromUuid(dataset.uuid);  
+      }
       if (!object) return;
 
       const left = target.offsetLeft - 225;
@@ -596,6 +669,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
       const options = {position: position};
       if (dataset.header) options.header = dataset.header;
       if (dataset.img) options.img = dataset.img;
+      if (dataset.description) options.description = dataset.description;
 
       PDE.TooltipCreator.showTooltipFor(object, event, html, options) 
     }
@@ -621,8 +695,9 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
 
     switch (droppedObject.type) {
       case "Item":  await this._onDropItem(droppedObject, index, section); break;
+      case "Macro": await this._onDropMacro(droppedObject, index, section); break;
       case "Slot":  await this._onDropSlot(droppedObject, index, section); break;
-      default:      await this._onDropOther(droppedObject, index, section); // Handle by system
+      default:      await this._onDropOther(droppedObject, index, section); // Handled by system
     }
   }
 
@@ -632,32 +707,50 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   }
 
   async _onDropItem(dropped, index, section) {
-    const itemId = dropped.uuid.replace(/^.*?Item\./, '');
-    this.actor.update({[`flags.tokenHotbar.${section}.${index}`]: itemId});
+    const item = await fromUuid(dropped.uuid);
+    if (!item) return;
+    this.actor.update({[`flags.tokenHotbar.${section}.${index}`]: {
+      slotType: "item",
+      img: item.img,
+      name: item.name,
+      uuid: dropped.uuid,
+      itemId: item.id
+    }});
+  }
+
+  async _onDropMacro(dropped, index, section) {
+    const macro = await fromUuid(dropped.uuid);
+    if (!macro) return;
+    this.actor.update({[`flags.tokenHotbar.${section}.${index}`]: {
+      slotType: "macro",
+      img: macro.img,
+      name: macro.name,
+      uuid: dropped.uuid,
+    }});
   }
 
   async _onDropSlot(dropped, index, section) {
-    this.actor.update({[`flags.tokenHotbar.${section}.${index}`]: dropped.itemId});
+    this.actor.update({[`flags.tokenHotbar.${section}.${index}`]: dropped.slotData});
   }
 
   _onDragStart(event) {
-    if (event.target.classList.contains('item-slot')) this._onDragItem(event);
+    if (event.target.classList.contains('pth-slot')) this._onDragSlot(event);
   }
 
-  _onDragItem(event) {
+  _onDragSlot(event) {
     const dataset = event.target.dataset;
     const index = dataset.index;
     const sectionKey = dataset.section;
-    const itemId = TokenHotbar.getItemIdFromSlot(index, sectionKey);
-    if (!itemId) return;
+    const slotData = TokenHotbar.getSlot(index, sectionKey);
+    if (!slotData) return;
 
     const dragData = {
       type: "Slot",
-      itemId: itemId
+      slotData: slotData
     }
 
     event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
-    this.actor.update({[`flags.tokenHotbar.${sectionKey}.${index}`]: ""});
+    this.actor.update({[`flags.tokenHotbar.${sectionKey}.${index}`]: null});
   }
   // ==================== CURSOR =====================
 }
