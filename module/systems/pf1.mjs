@@ -65,7 +65,7 @@ export function pf1Config() {
     if (slot.system.carried === false) return '<i class="fa-solid fa-grip-lines"></i>';
     if (slot.system.carried === true) return '<i class="fa-solid fa-person-walking-luggage"></i>';
   }
-  PTH.autofill = (actor) => actor.items.filter(item => item.hasaction && item.canUse !== false);
+  PTH.autofill = (actor) => actor.items.filter(item => item.hasAction && item.canUse !== false);
 
   PTH.actions = [
     {
