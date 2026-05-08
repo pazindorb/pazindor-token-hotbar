@@ -62,7 +62,35 @@ export function pf2eConfig() {
       }
     }
   }
-  // TODO autofill?
+  PTH.autofill = (actor) => {
+    const itemsToAdd = [];
+    const seen = new Set();
+    const add = item => {
+      if (!item || seen.has(item.id)) return;
+      itemsToAdd.push(item);
+      seen.add(item.id);
+    }
+
+    for (const action of actor.system.actions ?? []) add(action.item);
+
+    for (const item of actor.itemTypes?.action ?? []) {
+      if (hasUsableActionCost(item)) add(item);
+    }
+
+    for (const item of actor.itemTypes?.consumable ?? []) {
+      if ((item.system.quantity ?? 0) > 0) add(item);
+    }
+
+    for (const item of actor.itemTypes?.spell ?? []) {
+      if (canAutofillSpell(item)) add(item);
+    }
+
+    for (const item of actor.itemTypes?.feat ?? []) {
+      if (hasUsableActionCost(item) || hasLimitedUses(item)) add(item);
+    }
+
+    return itemsToAdd;
+  };
 
   // Action Buttons
   PTH.actions = [
@@ -320,6 +348,36 @@ function toSelectOptions(ranks) {
 }
 
 //============== OTHER FUNCTIONS ==============
+function hasUsableActionCost(item) {
+  const type = item.system.actionType?.value ?? item.actionCost?.type;
+  if (type) return type !== "passive";
+
+  return item.system.time?.value || item.system.actions?.value;
+}
+
+function hasLimitedUses(item) {
+  return !!(item.system.frequency?.max || item.system.uses?.max);
+}
+
+function canAutofillSpell(item) {
+  const spellcasting = item.spellcasting;
+  if (!spellcasting) return false;
+
+  const prepared = spellcasting.system.prepared?.value;
+  if (prepared !== "prepared") return true;
+
+  const slots = spellcasting.system.slots || {};
+  let rank = 0;
+  while (slots[`slot${rank}`]) {
+    const slot = slots[`slot${rank}`];
+    const preparedSlot = slot.prepared?.find(prep => prep.id === item.id && !prep.expended);
+    if (preparedSlot) return true;
+    rank++;
+  }
+
+  return false;
+}
+
 function equipChange(item, type, hand) {
   if (!item.actor) return;
 

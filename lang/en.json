@@ -70,6 +70,23 @@
   "PTH.DND5E.PREPARE_SPELL": "Prepare Spell",
   "PTH.DND5E.UNPREPARE_SPELL": "Unprepare Spell",
 
+  "PTH.PF1.FILTER.STANDARD": "Standard Action",
+  "PTH.PF1.FILTER.MOVE": "Move Action",
+  "PTH.PF1.FILTER.SWIFT": "Swift Action",
+  "PTH.PF1.FILTER.FREE": "Free Action",
+  "PTH.PF1.FILTER.FULL": "Full-Round Action",
+
+  "PTH.PF1.START_REST": "Start Rest",
+  "PTH.PF1.BASIC_ROLL": "Roll Check/Save",
+  "PTH.PF1.INITIATIVE": "Roll for Initiative",
+
+  "PTH.PF1.EQUIP_ITEM": "Equip Item",
+  "PTH.PF1.UNEQUIP_ITEM": "Unequip Item",
+  "PTH.PF1.CARRY_ITEM": "Carry Item",
+  "PTH.PF1.DROP_ITEM": "Drop Item",
+  "PTH.PF1.PREPARE_SPELL": "Prepare Spell",
+  "PTH.PF1.UNPREPARE_SPELL": "Unprepare Spell",
+
 
   "PTH.PF2E.FILTER.ACTION_1": "1 Action",
   "PTH.PF2E.FILTER.ACTION_2": "2 Action",
