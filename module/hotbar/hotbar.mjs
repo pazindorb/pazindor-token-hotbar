@@ -1,4 +1,5 @@
 import { openTokenHotbarConfig } from "./token-hotbar-config.mjs";
+import { overrideCoreKeybindActions } from '../configs/keybindings.mjs'
 
 export default class TokenHotbar extends foundry.applications.ui.Hotbar { 
 
@@ -218,7 +219,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     context.endTurnButton = this._isMyTurn();
     context.filter = this.filter;
     context.autofill = !!PTH.autofill;
-    context.portraitOverlay = PTH.portraitOverlay(this.actor);
+    if (tokenHotbarSettings.overlay) context.portraitOverlay = PTH.portraitOverlay(this.actor);
   }
 
   _prepareHealth() {
@@ -290,7 +291,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     for (let i = 0; i < size; i++) {
       let slot = section[i];
       if (slot?.slotType === "item") {
-        slot = this._prepareItemSlot(slot);
+        slot = this._prepareItemSlot(slot, tokenHotbarSettings);
       }
       this._runFilter(slot);
       this._marker(slot);
@@ -319,10 +320,10 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     return valid;
   }
 
-  _prepareItemSlot(slot) {
+  _prepareItemSlot(slot, tokenHotbarSettings) {
     const original = this.actor.items.get(slot.itemId);
     const item = original ? foundry.utils.deepClone(original) : null;
-    this._chargesAndQuantity(item);
+    this._chargesAndQuantity(item, tokenHotbarSettings);
     item.slotType = "item";
     return item;
   }
@@ -340,15 +341,17 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     slot.marker = PTH.generateMarker(slot);
   }
 
-  _chargesAndQuantity(item) {
+  _chargesAndQuantity(item, tokenHotbarSettings) {
     if (PTH.getItemCharges) {
       const charges = PTH.getItemCharges(item);
-      if (charges != null) item.showCharges = charges;
+      if (charges != null && tokenHotbarSettings.showCharges) item.showCharges = charges;
+      else delete item.showCharges;
     }
 
     if (PTH.getItemQuantity) {
       const quantity = PTH.getItemQuantity(item);
-      if (quantity != null) item.showQuantity = quantity;
+      if (quantity != null && tokenHotbarSettings.showQuantity) item.showQuantity = quantity;
+      else delete item.showQuantity;
     }
   }
 
@@ -620,6 +623,9 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     await super._onRender(context, options);
 
     if (context.tokenHotbar && context.showTokenHotbar) {
+      // Override Keybind Actions
+      overrideCoreKeybindActions();
+
       // Add tooltip
       this.element.appendChild(PDE.TooltipCreator.getTooltipHtml());
 
@@ -779,19 +785,19 @@ function prepareTokenHotbarActorConfig() {
     sectionA: {},
     sectionB: {},
     resource1: {
-      color: "#ffffff",
-      path: "",
-      label: ""
+      color: game.settings.get("pazindor-token-hotbar", "resource1Color"),
+      path: game.settings.get("pazindor-token-hotbar", "resource1Path"),
+      label: game.settings.get("pazindor-token-hotbar", "resource1Name")
     },
     resource2: {
-      color: "#ffffff",
-      path: "",
-      label: ""
+      color: game.settings.get("pazindor-token-hotbar", "resource2Color"),
+      path: game.settings.get("pazindor-token-hotbar", "resource2Path"),
+      label: game.settings.get("pazindor-token-hotbar", "resource2Name")
     },
     resource3: {
-      color: "#ffffff",
-      path: "",
-      label: ""
+      color: game.settings.get("pazindor-token-hotbar", "resource3Color"),
+      path: game.settings.get("pazindor-token-hotbar", "resource3Path"),
+      label: game.settings.get("pazindor-token-hotbar", "resource3Name")
     },
   }
 }

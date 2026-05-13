@@ -10,6 +10,21 @@
     </div>
 
     <div class="form-group">
+      <label>{{localize "PTH.HC.OVERLAY"}}</label>
+      <input type="checkbox" data-cType="activable" data-path="settings.overlay" {{checked settings.overlay}}/>
+    </div>
+
+    <div class="form-group">
+      <label>{{localize "PTH.HC.SHOW_CHARGES"}}</label>
+      <input type="checkbox" data-cType="activable" data-path="settings.showCharges" {{checked settings.showCharges}}/>
+    </div>
+
+    <div class="form-group">
+      <label>{{localize "PTH.HC.SHOW_QUANTITY"}}</label>
+      <input type="checkbox" data-cType="activable" data-path="settings.showQuantity" {{checked settings.showQuantity}}/>
+    </div>
+
+    <div class="form-group">
       <label>{{localize "PTH.HC.SECTION_A"}}</label>
       <div class="form-fields">
         <label>{{localize "PTH.HC.ROWS"}}</label>
@@ -97,6 +112,8 @@
       </div>
     </fieldset>
 
+    {{!-- Reset to default --}}
+    <button data-action="default"><i class="fa-solid fa-arrow-rotate-left fa-lg"></i></i>{{localize "PTH.HC.DEFAULT_RESOURCE"}}</button>
   </fieldset>
 
   {{!-- Confirm --}}

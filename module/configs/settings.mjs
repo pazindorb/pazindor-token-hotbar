@@ -32,9 +32,83 @@ export function registerTokenHotbarSettings() {
       borderColor: true,
       markers: true,
       showCharges: true,
+      showQuantity: true,
       displayToken: false,
+      overlay: true,
     },
     type: Object
+  });
+
+  game.settings.register("pazindor-token-hotbar", "resource1Path", {
+    scope: "world",
+    config: true,
+    default: "",
+    name: "PTH.SETTINGS.RESOURCE_1_PATH",
+    type: String
+  });
+
+  game.settings.register("pazindor-token-hotbar", "resource1Name", {
+    scope: "world",
+    config: true,
+    default: "",
+    name: "PTH.SETTINGS.RESOURCE_1_NAME",
+    type: String
+  });
+
+  game.settings.register("pazindor-token-hotbar", "resource1Color", {
+    scope: "world",
+    config: true,
+    default: "#ffffff",
+    name: "PTH.SETTINGS.RESOURCE_1_COLOR",
+    type: String
+  });
+
+  game.settings.register("pazindor-token-hotbar", "resource2Path", {
+    scope: "world",
+    config: true,
+    default: "",
+    name: "PTH.SETTINGS.RESOURCE_2_PATH",
+    type: String
+  });
+
+  game.settings.register("pazindor-token-hotbar", "resource2Name", {
+    scope: "world",
+    config: true,
+    default: "",
+    name: "PTH.SETTINGS.RESOURCE_2_NAME",
+    type: String
+  });
+
+  game.settings.register("pazindor-token-hotbar", "resource2Color", {
+    scope: "world",
+    config: true,
+    default: "#ffffff",
+    name: "PTH.SETTINGS.RESOURCE_2_COLOR",
+    type: String
+  });
+
+  game.settings.register("pazindor-token-hotbar", "resource3Path", {
+    scope: "world",
+    config: true,
+    default: "",
+    name: "PTH.SETTINGS.RESOURCE_3_PATH",
+    type: String
+  });
+
+  game.settings.register("pazindor-token-hotbar", "resource3Name", {
+    scope: "world",
+    config: true,
+    default: "",
+    name: "PTH.SETTINGS.RESOURCE_3_NAME",
+    type: String
+  });
+
+  game.settings.register("pazindor-token-hotbar", "resource3Color", {
+    scope: "world",
+    config: true,
+    default: "#ffffff",
+    name: "PTH.SETTINGS.RESOURCE_3_COLOR",
+    type: String
   });
 
   game.settings.register("pazindor-token-hotbar", "maxHpPath", {

@@ -32,6 +32,7 @@ export class TokenHotbarConfig extends BaseDialog {
     const initialized = super._initializeApplicationOptions(options);
     initialized.window.resizable = true;
     initialized.actions.save = this._onSave;
+    initialized.actions.default = this._onDefault;
     return initialized;
   }
 
@@ -52,6 +53,26 @@ export class TokenHotbarConfig extends BaseDialog {
     await game.settings.set("pazindor-token-hotbar", "tokenHotbarSettings", this.settings);
     ui.hotbar.render();
     this.close();
+  }
+
+  async _onDefault(event, target) {
+    event.preventDefault();
+    this.data.resource1 = {
+      color: game.settings.get("pazindor-token-hotbar", "resource1Color"),
+      path: game.settings.get("pazindor-token-hotbar", "resource1Path"),
+      label: game.settings.get("pazindor-token-hotbar", "resource1Name")
+    },
+    this.data.resource2 = {
+      color: game.settings.get("pazindor-token-hotbar", "resource2Color"),
+      path: game.settings.get("pazindor-token-hotbar", "resource2Path"),
+      label: game.settings.get("pazindor-token-hotbar", "resource2Name")
+    },
+    this.data.resource3 = {
+      color: game.settings.get("pazindor-token-hotbar", "resource3Color"),
+      path: game.settings.get("pazindor-token-hotbar", "resource3Path"),
+      label: game.settings.get("pazindor-token-hotbar", "resource3Name")
+    }
+    this.render();
   }
 }
 
