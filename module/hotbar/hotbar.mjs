@@ -28,6 +28,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   constructor(options = {}) {
     super(options)
     this.tokenHotbar = game.settings.get("pazindor-token-hotbar", "tokenHotbar");
+    this.lockHotbar = game.settings.get("pazindor-token-hotbar", "lockHotbar");
     this.original = false;
 
     const filterOptions = PTH.filters;
@@ -70,6 +71,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   _initializeApplicationOptions(options) {
     const initialized = super._initializeApplicationOptions(options);
     initialized.actions.swap = this._onSwap;
+    initialized.actions.lock = this._onLock;
     initialized.actions.config = this._onConfigTokenHotbar;
     initialized.actions.spendHP = () => this._handleDeltaHpChange(1, true);
     initialized.actions.regainHP = () => this._handleDeltaHpChange(1, false);
@@ -166,6 +168,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     };
     context.filter = this.filter;
     context.tokenHotbar = this.tokenHotbar;
+    context.locked = this.lockHotbar;
     context.showTokenHotbar = this.showTokenHotbar;
     return context;
   }
@@ -205,10 +208,17 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     context.health = this._prepareHealth(actorConfig);
     context.resources = this._prepareResources(actorConfig);
 
-    context.actions = PTH.actions;
+    // Prepare Action Buttons
+    context.actions = [];
+    for (const original of PTH.actions) {
+      const action = foundry.utils.deepClone(original);
+      if (original.hide) action.hide = original.hide(this.actor);
+      context.actions.push(action)
+    }
     context.endTurnButton = this._isMyTurn();
     context.filter = this.filter;
     context.autofill = !!PTH.autofill;
+    context.portraitOverlay = PTH.portraitOverlay(this.actor);
   }
 
   _prepareHealth() {
@@ -474,6 +484,12 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     this.render();
   }
 
+  _onLock(event, target) {
+    this.lockHotbar = !this.lockHotbar;
+    game.settings.set("pazindor-token-hotbar", "lockHotbar", this.lockHotbar);
+    this.render();
+  }
+
   _onConfigTokenHotbar(event, target) {
     if (this.actor) openTokenHotbarConfig(this.actor);
   }
@@ -608,6 +624,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
       this.element.appendChild(PDE.TooltipCreator.getTooltipHtml());
 
       // Override drop behavior
+      if (this.lockHotbar) return;
       new foundry.applications.ux.DragDrop.implementation({
         dragSelector: ".slot.full",
         dropSelector: ".slot",

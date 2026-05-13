@@ -10,6 +10,7 @@
     <nav id="hotbar-controls" style="margin-left: 5px; margin-top: auto;">
       {{#if filter}}<button type="button" class="button-wide ui-control {{filter.icon}} icon filter-button slot full" data-action="filter" data-tooltip="{{localize 'PTH.FILTER.SELECT'}}[{{localize filter.label}}]"></button>{{/if}}
       {{#if autofill}}<button type="button" style="margin-top: 2px;" class="button-wide ui-control fa-solid fa-fill-drip icon" data-action="autofill" data-tooltip="{{localize 'PTH.FILL'}}"></button>{{/if}}
+      <button type="button" style="margin-top: 2px; {{#if locked}}background-color: #b1b1b1; color: #353535;{{/if}}" class="button-wide ui-control fa-solid fa-lock-open icon" data-action="lock" data-tooltip="{{localize 'PTH.LOCKED'}}"></button>
       <button type="button" style="margin-top: 2px;" class="button-wide ui-control fa-solid fa-gears icon" data-action="config" data-tooltip="{{localize 'PTH.CONFIG'}}"></button>
       {{#unless actorLink}}
       <button type="button" style="margin-top: 2px; {{#if original}}background-color: #9b0cc9;{{/if}}" class="button-wide ui-control fa-solid fa-user icon" data-action="original" data-tooltip="{{localize 'PTH.ORIGINAL'}}"></button>
@@ -50,6 +51,7 @@
       {{{resources}}}
 
       <img class="char-img portrait" data-tooltip="{{localize "PTH.DBCLICK"}}" src="{{@root.img}}">
+      {{#if @root.portraitOverlay}}<div class="portrait-overlay">{{{@root.portraitOverlay}}}</div>{{/if}}
 
       {{!-- HP Bar --}}
       <div class="resource margin-top-10" data-tooltip="{{localize 'PTH.CURRENT_HP'}}">
@@ -130,7 +132,9 @@
     {{#if img}}
     <div class="flexcol hotbar-controls action-buttons">
       {{#each actions}}
+      {{#unless hide}}
         <button type="button" class="action-button ui-control {{icon}} icon" data-action="{{key}}" data-tooltip="{{localize label}}"></button>
+      {{/unless}}
       {{/each}}
     </div>
     <div class="flexcol hotbar-controls next-turn">

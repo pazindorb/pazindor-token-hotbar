@@ -11,7 +11,9 @@ export function pf2eSpecificSettings() {
 }
 
 export function pf2eConfig() {
+  PTH.portraitOverlay = portraitOverlay;
   PTH.customDropHandler = dropHandler;
+
   PTH.handleSlotUse = (slot, options) => {
     switch (slot.slotType) {
       case "item":
@@ -111,6 +113,41 @@ export function pf2eConfig() {
       label: "PTH.PF2E.BASIC_ROLL",
       icon: "fas fa-dice",
       action: (actor, options) => new RollDialog(actor, prepareRolls(actor)).render(true)
+    },
+    {
+      key: "recovery",
+      label: "PTH.PF2E.RECOVERY",
+      icon: "fas fa-skull",
+      action: async (actor, options) => {
+        const result = await actor.rollRecovery(options?.event);
+
+        const max = actor.system.attributes?.dying?.max ?? 4;
+        const dying = actor.getCondition("dying");
+        switch (result.degreeOfSuccess) {
+          case 0:
+            // Crit Fail
+            await actor.increaseCondition("dying");
+            await actor.increaseCondition("dying");
+            break;
+
+          case 1:
+            // Fail
+            await actor.increaseCondition("dying");
+            break;
+
+          case 2: 
+            // Success
+            await actor.decreaseCondition("dying");
+            break;
+
+          case 3: 
+            // Crit Success
+            await actor.decreaseCondition("dying");
+            await actor.decreaseCondition("dying");
+            break;
+        }
+      },
+      hide: (actor) => !isCharacterDying(actor)
     }
   ]
 
@@ -474,4 +511,64 @@ function itemCostFilter(item, filterValue) {
   if (actionValue == filterValue) return true;
 
   return false;
+}
+
+function portraitOverlay(actor) {
+  if (!(actor.isDead || isCharacterDying(actor))) return "";
+
+  if (actor.type === "character" && !isCharacterDead(actor)) {
+    return printDyingOverlay(actor);
+  }
+  return printDeathOverlay();
+}
+
+function isCharacterDying(actor) {
+  if (actor.type !== "character") return false; // Not a PC
+  if (actor.statuses.has("dead")) return false; // Is dead already
+  return actor.system.attributes.dying.value > 0;
+}
+
+function isCharacterDead(actor) {
+  if (actor.statuses.has("dead")) return true; // Is dead already
+  
+  const dying = actor.system.attributes?.dying;
+  return dying.value >= dying.max;
+}
+
+function printDeathOverlay(tooltipKey) {
+  let content = '<div class="main-overlay" style="margin-top: 20px; padding: 2px;">';
+  content += `<div style="display: flex; justify-content: center; align-items:center;" data-tooltip="${game.i18n.localize("PTH.PF2E.DEAD")}">`;
+  content += '<i class="fa-solid fa-5x fa-skull" style="margin: 0px 3px; color: #ff0000; text-shadow: -1px 0 #000000, 0 1px #000000, 1px 0 #000000, 0 -1px #000000;"></i>';
+  content += '</div>';
+  content += '</div>';
+  return content;
+}
+
+function printDyingOverlay(actor) {
+  const dying = actor.system.attributes.dying;
+  const doomed = actor.system.attributes.doomed?.value ?? 0;
+  const max = dying.max + doomed;
+  const value = dying.value;
+  const maxed = value >= dying.max;
+
+  let content = '<div class="main-overlay" style="margin-top: 70px; padding: 2px;">';
+  content += `<div style="display: flex; justify-content: center; align-items:center; height:25px;" data-tooltip="${game.i18n.localize('PTH.PF2E.DYING')}">`;
+  if (maxed) {
+    for (let i = 0; i < max; i++) {
+      content += '<i class="fa-solid fa-lg fa-skull" style="margin: 0px 3px; color: #ff0000; text-shadow: -1px 0 #000000, 0 1px #000000, 1px 0 #000000, 0 -1px #000000;"></i>';
+    }
+  } else {
+    for (let i = 0; i < value; i++) {
+      content += '<i class="fa-solid fa-lg fa-circle-xmark" style="margin: 0px 3px; color: #ff0000; text-shadow: -1px 0 #000000, 0 1px #000000, 1px 0 #000000, 0 -1px #000000;"></i>';
+    }
+    for (let i = value; i < dying.max; i++) {
+      content += '<i class="fa-regular fa-lg fa-circle" style="margin: 0px 3px; color: #ffffff; text-shadow: -1px 0 #000000, 0 1px #000000, 1px 0 #000000, 0 -1px #000000;"></i>';
+    }
+    for (let i = 0; i < doomed; i++) {
+      content += '<i class="fa-solid fa-lg fa-skull" style="margin: 0px 3px; color: #ff0000; text-shadow: -1px 0 #000000, 0 1px #000000, 1px 0 #000000, 0 -1px #000000;"></i>';
+    }
+  }
+  content += '</div>';
+  content += '</div>';
+  return content;
 }

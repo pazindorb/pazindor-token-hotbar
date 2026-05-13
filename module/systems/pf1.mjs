@@ -8,6 +8,7 @@ export function pf1SpecificSettings() {
   if (!currentHP) game.settings.set("pazindor-token-hotbar", "currentHpPath", "system.attributes.hp.value");
   const tempHP = game.settings.get("pazindor-token-hotbar", "tempHpPath");
   if (!tempHP) game.settings.set("pazindor-token-hotbar", "tempHpPath", "system.attributes.hp.temp");
+  game.settings.set("pazindor-token-hotbar", "negativeHealth", true);
 }
 
 export function pf1Config() {

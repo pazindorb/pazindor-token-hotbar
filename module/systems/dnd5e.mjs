@@ -11,7 +11,9 @@ export function dnd5eSpecificSettings() {
 }
 
 export function dnd5eConfig() {
+  PTH.portraitOverlay = portraitOverlay;
   PTH.customDropHandler = dropHandler;
+  
   PTH.customSlotConfigHandler = (slot, actor) => {
     if (slot.slotType === "activity") {
       fromUuid(slot.uuid).then(activity => activity.sheet.render(true));
@@ -110,6 +112,26 @@ export function dnd5eConfig() {
       label: "PTH.DND5E.BASIC_ROLL",
       icon: "fas fa-dice",
       action: (actor, options) => new RollDialog(actor, prepareRolls()).render(true)
+    },
+    {
+      key: "deathSave",
+      label: "PTH.DND5E.DEATH_SAVE",
+      icon: "fas fa-skull",
+      action: (actor, options) => actor.rollDeathSave(),
+      hide: (actor) => {
+        if (actor.type !== "character") return true;
+        if (actor.system.attributes.hp.value > 0) return true;
+      }
+    },
+    {
+      key: "concentration",
+      label: "PTH.DND5E.CONCENTRATION",
+      icon: "fas fa-head-side-brain",
+      action: (actor, options) => actor.rollConcentration(),
+      hide: (actor) => {
+        if (actor.concentration.items.size === 0 && actor.concentration.effects.size === 0) return true;
+        return false;
+      }
     }
   ]
 
@@ -179,7 +201,7 @@ export function dnd5eConfig() {
         if (!item) return false;
 
         const prepared = item.system.prepared;
-        if (!prepared == null) return false;
+        if (prepared == null) return false;
         return prepared === 0
       },
       callback: li => {
@@ -196,7 +218,7 @@ export function dnd5eConfig() {
         if (!item) return false;
 
         const prepared = item.system.prepared;
-        if (!prepared == null) return false;
+        if (prepared == null) return false;
         return prepared === 1
       },
       callback: li => {
@@ -299,4 +321,38 @@ async function dropHandler(dropped, index, section, actor) {
     activation: activity.activation.type,
     description: `<p>@UUID[${activity.item.uuid}]</p>`
   }});
+}
+
+function portraitOverlay(actor) {
+  if (actor.system.attributes.hp.value > 0) return "";
+  const death = actor.system.attributes?.death;
+  if (!death) return "";
+
+  if (actor.type !== "character" || death.failure >= 3) {
+    return printDeathOverlay();
+  }
+  return printDeathSaveOverlay(death);
+}
+
+function printDeathOverlay() {
+  let content = '<div class="main-overlay" style="margin-top: 20px; padding: 2px;">';
+  content += `<div style="display: flex; justify-content: center; align-items:center;" data-tooltip="${game.i18n.localize('PTH.DND5E.DEATH')}">`
+  content += '<i class="fa-solid fa-5x fa-skull" style="margin: 0px 3px; color: #ff0000; text-shadow: -1px 0 #000000, 0 1px #000000, 1px 0 #000000, 0 -1px #000000;"></i>'
+  content += '</div>';
+  content += '</div>';
+  return content;
+}
+
+function printDeathSaveOverlay(death) {
+  let content = '<div class="main-overlay" style="margin-top: 70px; padding: 2px;">';
+  content += `<div style="display: flex; justify-content: center; align-items:center; height:25px;" data-tooltip="${game.i18n.localize('PTH.DND5E.DYING')}">`
+  for (let i = 0; i < death.success; i++) {
+    content += '<i class="fa-solid fa-lg fa-skull" style="margin: 0px 3px; color: #00ff00; text-shadow: -1px 0 #000000, 0 1px #000000, 1px 0 #000000, 0 -1px #000000;"></i>';
+  }
+  for (let i = 0; i < death.failure; i++) {
+    content += '<i class="fa-solid fa-lg fa-skull" style="margin: 0px 3px; color: #ff0000; text-shadow: -1px 0 #000000, 0 1px #000000, 1px 0 #000000, 0 -1px #000000;"></i>';
+  }
+  content += '</div>';
+  content += '</div>';
+  return content;
 }

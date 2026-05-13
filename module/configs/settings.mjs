@@ -6,6 +6,13 @@ export function registerTokenHotbarSettings() {
     type: Boolean
   });
 
+  game.settings.register("pazindor-token-hotbar", "lockHotbar", {
+    scope: "client",
+    config: false,
+    default: false,
+    type: Boolean
+  });
+
   game.settings.register("pazindor-token-hotbar", "tokenHotbarSettings", {
     scope: "client",
     config: false,

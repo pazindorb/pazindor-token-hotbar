@@ -3,6 +3,7 @@
   "PTH.TOKEN": "Change to Token Mode",
   "PTH.CONFIG": "Configure Token Hotbar",
   "PTH.ORIGINAL": "Modify Prototype Actor",
+  "PTH.LOCKED": "Hotbar Locked",
   "PTH.FILL": "Fill Token Hotbar",
   "PTH.FILTER.SELECT": "Selected Filter: ",
   "PTH.FILTER.NONE": "None",
@@ -50,7 +51,7 @@
   "PTH.SETTINGS.CURRENT_HP": "Current HP Path (required)",
   "PTH.SETTINGS.TEMP_HP": "Temporary HP Path (if exist)",
   "PTH.SETTINGS.NEGATIVE_HEALTH": "Allow Negative Health",
-  "PTH.SETTINGS.NEGATIVE_HEALTH_HINT": "If true, HP will be able to reach negative values on the Token Hotbar. Some systems might not allow it anyway.",
+  "PTH.SETTINGS.NEGATIVE_HEALTH_HINT": "If true, HP will be able to reach negative values on the Token Hotbar. Some systems might not allow it anyway. Some systems might set that value as always true.",
 
 
   "PTH.DND5E.FILTER.ACTIVITY": "Activity",
@@ -62,6 +63,10 @@
   "PTH.DND5E.START_REST.SHORT": "Start Short Rest",
   "PTH.DND5E.BASIC_ROLL": "Roll Check/Save",
   "PTH.DND5E.INITIATIVE": "Roll for Initiative",
+  "PTH.DND5E.DEATH_SAVE": "Roll Death Save",
+  "PTH.DND5E.CONCENTRATION": "Roll Concentration Check",
+  "PTH.DND5E.DYING": "You are Dying",
+  "PTH.DND5E.DEATH": "You are Dead",
 
   "PTH.DND5E.EQUIP_ITEM": "Equip Item",
   "PTH.DND5E.UNEQUIP_ITEM": "Unequip Item",
@@ -79,6 +84,7 @@
   "PTH.PF1.START_REST": "Start Rest",
   "PTH.PF1.BASIC_ROLL": "Roll Check/Save",
   "PTH.PF1.INITIATIVE": "Roll for Initiative",
+  "PTH.PF1.STABILIZE": "Roll Stabilization Check",
 
   "PTH.PF1.EQUIP_ITEM": "Equip Item",
   "PTH.PF1.UNEQUIP_ITEM": "Unequip Item",
@@ -97,6 +103,9 @@
   "PTH.PF2E.START_REST": "Start Rest",
   "PTH.PF2E.BASIC_ROLL": "Roll Check/Save",
   "PTH.PF2E.INITIATIVE": "Roll for Initiative",
+  "PTH.PF2E.RECOVERY": "Roll Recovery Check",
+  "PTH.PF2E.DYING": "You are Dying",
+  "PTH.PF2E.DEAD": "You are Dead",
 
   "PTH.PF2E.HOLD_ITEM_1H": "Hold in 1 Hand",
   "PTH.PF2E.HOLD_ITEM_2H": "Hold in 2 Hand",
