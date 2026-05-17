@@ -95,12 +95,6 @@ export function dnd5eConfig() {
       icon: "fas fa-campground",
       action: (actor, options) => actor.longRest()
     },
-        {
-      key: "testing",
-      label: "aw3e.character.stats.sharp",
-      icon: "fas fa-dice",
-      action: (actor, options) => console.log("Action Button Test, actor %o options %o", actor, options)
-    },
     {
       key: "shortRest",
       label: "PTH.DND5E.START_REST.SHORT",
