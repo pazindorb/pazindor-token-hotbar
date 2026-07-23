@@ -219,7 +219,7 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     context.endTurnButton = this._isMyTurn();
     context.filter = this.filter;
     context.autofill = !!PTH.autofill;
-    if (tokenHotbarSettings.overlay) context.portraitOverlay = PTH.portraitOverlay(this.actor);
+    if (tokenHotbarSettings.overlay && PTH.portraitOverlay) context.portraitOverlay = PTH.portraitOverlay(this.actor);
   }
 
   _prepareHealth() {
