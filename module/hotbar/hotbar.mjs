@@ -269,7 +269,14 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
   }
 
   _resource(resource, clazz) {
-    const value = PDE.utils.getValueFromPath(this.actor, resource.path);
+    let value = "";
+    if (this.#isItemPath(resource.path)) {
+      const [item, path] = this.#extractFromItemPath(resource.path);
+      if (item) value = PDE.utils.getValueFromPath(item, path);
+    }
+    else {
+      value = PDE.utils.getValueFromPath(this.actor, resource.path);
+    }
 
     return `
       <div class="${clazz}">
@@ -476,7 +483,17 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
         if (deltaSub) return this._handleDeltaHpChange(Math.abs(value), true);
       }
 
-      if (!isNaN(value)) await this.actor.update({[path]: value});
+      if (!isNaN(value)) {
+        // Handle Item update
+        if (this.#isItemPath(path)) {
+          const [item, itemPath] = this.#extractFromItemPath(path);
+          if (item) item.update({[itemPath]: value});
+        }
+        // Handle actor update
+        else {
+          await this.actor.update({[path]: value});
+        }
+      }
     }
     this.render();
   }
@@ -778,6 +795,16 @@ export default class TokenHotbar extends foundry.applications.ui.Hotbar {
     this.actor.update({[`flags.tokenHotbar.${sectionKey}.${index}`]: null});
   }
   // ==================== CURSOR =====================
+
+  #isItemPath(path) {
+    return path.startsWith("ITEM#");
+  }
+
+  #extractFromItemPath(itemPath) {
+    const [marker, itemId, path] = itemPath.split("#");
+    const item = this.actor.items.get(itemId);
+    return [item, path];
+  }
 }
 
 function prepareTokenHotbarActorConfig() {
